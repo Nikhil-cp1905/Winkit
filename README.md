@@ -67,42 +67,19 @@ k = time constant(0.05) \
 p = pop(probability of precipitation) \
 w = variance weight constant 0.05 \
 If a pre-agreed API threshold is crossed the policy executes automatically.
-The system automatically compensates workers for **income loss caused by external disruptions** such as:
 
-- extreme weather
-- government movement restrictions
-- dark store outages
-- telecom network failures
+# Platform Justification (Mobile-First)
+Winkit is strictly deployed as a native Android Mobile Application (Kotlin + Jetpack Compose). A web app cannot support our hyper-local risk engine, which requires continuous GPS Telemetry and Background location access to accurately map the rider to a specific 174m hexagonal grid for dynamic geospatial pricing.
 
-Unlike traditional insurance systems, Winkit uses **automated trigger detection and parametric payouts**, eliminating the need for manual claim processing.
+# Integrating AI/ML (Premium Calculation & Fraud Detection)
+Winkit utilizes AI/ML across three distinct layers of the architecture to ensure accurate pricing and eliminate systemic abuse:
 
-The platform combines:
+- **Dynamic Premium Calculation (The β Multiplier):** The premium relies on β=1.0+Urisk​+Frisk​+Vzone​. As the platform scales, Vzone​ (geospatial penalty) transitions from static data to an empirical ML feedback loop. By mapping operational zones using Uber H3 Hexagonal Grids, the system tracks historical delivery failure rates per hexagon. If a specific street floods repeatedly, the algorithm automatically spikes the Vzone​ premium for that exact grid.
 
-- **AI-based disruption prediction**
-- **actuarial premium modeling**
-- **real-time event verification**
-- **zero-touch payouts**
+- **Automated Fraud Detection (Frisk​):** Because the platform is 100% parametric, individual "fake claims" are impossible (a rider cannot claim it rained if the API says it is sunny). However, to protect the capital pool from systemic platform abuse, we include Frisk​, a dynamic fraud buffer that algorithmically scales based on suspicious user clustering or historically anomalous API data.
 
----
+- **Agentic AI for Unstructured Risk:** Weather provides structured probabilities, but civic risk (riots, curfews) does not. We integrate a lightweight Agentic AI layer utilizing the Gemini 2.5 Flash API. By parsing live local RSS news feeds through strict zero-shot prompts, the LLM acts as an extraction agent, returning a deterministic JSON probability of civic disruption to feed the math engine.
 
-# Target Persona
-
-The system is designed for **Q-Commerce delivery workers**, who operate on **hourly or shift-based earnings**.
-
-Example worker profile:
-
-| Attribute | Example |
-|---|---|
-Platform | Blinkit |
-Primary Dark Store | Sector 4 Warehouse |
-Working Hours | Fri 6PM – 11PM |
-Avg Earnings | ₹150/hour |
-
-If an external disruption prevents them from completing shifts, **their income drops to zero**.
-
-Traditional insurance models cannot handle this scenario due to **small payout size and high claim processing cost**.
-
----
 
 # External Disruptions Covered
 
@@ -153,30 +130,8 @@ To prevent **moral hazard**, the following disruptions are excluded:
 
 ---
 
-# Parametric Insurance Framework
 
-Winkit implements a **parametric insurance model**, where payouts are triggered automatically when predefined conditions occur.
 
-Example trigger:
-`IF HeatIndex > 40°C
-AND Worker Shift Active
-THEN Auto-Payout`
-
-No claim filing is required.
-
----
-
-# Dynamic Premium Engine
-
-Traditional insurance uses:
-`Premium = Expected Loss + Margin`
-Where:
-`Expected Loss = p × L`
-
-p = probability of disruption  
-L = payout amount
-
----
 
 ## Winkit Enhancement
 
