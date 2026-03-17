@@ -23,14 +23,15 @@ A rider operating near Potheri, Chennai, plans to work a 6-hour shift. The weath
 5. **Zero-Touch Payout:** Because the parametric condition is mathematically met, the system monitors the rider. Based on the number of deliveries that the rider received for that area and the amount of time that was required to take de-tour. By the end of shift, Winkit instantly deposits the ₹1500 (1 hours × ₹150) coverage into the rider's wallet. No claims adjusters, no manual verification.
 
 # Weekly Premium Model and Parametric Triggers
-Winkit eliminates manual claim processing by tying payouts to objective, third-party data thresholds. The basic formula for any insurance is
+Winkit eliminates manual claim processing by tying payouts to objective, third-party data thresholds. The basic formula for this insurance policy is
 
 $$
-\text{Pure Premium} = p \times L
+\text{Pure Premium} = max(p_{weather},p_{civic}) \times L
 $$
 
 where \
-$p$ : the probability of loss  \
+$p_{weather}$ : the probability of precipitation or harsh weather  \
+$p_{civic}$ : riot, political movement ans other similar event \
 $L$ : payout
 
 To implement the model, we have dvided our implementation in 2 stages.
@@ -46,7 +47,25 @@ $U_{weather}$ : unpredictability of weather \
 $F_{risk}$ : game risk, where all the users are penalised. \
 $V_{zone}$ : penalizing less developed area where chance of impact is higher. \
 
+### $U_{weather}$
 
+This is dependent on 2 values, binary variance and time decay. 
+We calculate the binary variance using bernoulli distribution where,
+**Binary Variance** \
+{variance} = p(1-p)\
+
+This value peaks to 0.25 when p = 0.5.
+
+**Time Decay**
+A forecast for tomorrow is highly reliable but the same could not be said for 5 days in future. We are calculating with with the help of theta decay.
+\ k&radic;t \
+
+Finally, $U_{weather} = k&radic;t + w.p(1-p)$ \
+here, \
+t = no. of days in the future \
+k = time constant(0.05) \
+p = pop(probability of precipitation) \
+w = variance weight constant 0.05 \
 If a pre-agreed API threshold is crossed the policy executes automatically.
 The system automatically compensates workers for **income loss caused by external disruptions** such as:
 
