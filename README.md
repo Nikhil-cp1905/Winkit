@@ -74,13 +74,22 @@ $p$ = pop(probability of precipitation) \
 $w$ = variance weight constant 0.05 \
 If a pre-agreed API threshold is crossed the policy executes automatically.
 
+The final premium payed by the user in the first stage is
+
+$$
+\text{Premium} = (max(p_{weather},p_{civic}) \times L  \times \beta) + Platform fee
+$$
+
 ## Stage 2 - Hyper-Localization & AI Data Moat
 As the platform scales, the β multiplier transitions from static data to an empirical ML feedback loop.
 - H3 Spatial Mapping: By mapping operational zones using Uber H3 Hexagonal Hierarchical Geospatial Indexing to hyper-localize risk across the operational zone, the system tracks historical delivery failure rates. If a specific street floods repeatedly, the algorithm automatically spikes the Vzone​ premium for that exact grid.
   
 - Agentic AI: Weather provides structured probabilities, but civic risk (riots, curfews) does not. We integrate a lightweight Agentic AI layer utilizing the Gemini 2.5 Flash API. By parsing live local RSS news feeds through strict zero-shot prompts, the LLM returns a deterministic JSON probability of civic disruption to feed the math engine.
 
-# Events COVERED
+New users for whom no data is available are given a default score of the zone average.
+
+# Events
+## Events Covered
 
 | Category | Event Types |
 | :--- | :--- |
@@ -89,10 +98,10 @@ As the platform scales, the β multiplier transitions from static data to an emp
 | **Traffic / Urban** | Major road closures, Accident hotspots, Severe congestion, Construction blockages, VIP movement restrictions |
 | **Regulatory** | Section 144 curfews, Emergency lockdowns, Election restrictions, Festival crowd control zones, Protest zones |
 
-- Regulatory events that are in a 48h radius are not covered and are not liable to this policy.
+- Regulatory events that have been informed well in time, before 48 hours of the disruption will not be liable in the policy
 - If unplanned events continue for more than 1 week. The policy for next week will be on hold and not issued for the next week.
   
-# Events NOT Covered
+## Events NOT Covered
 
 To prevent **moral hazard**, the following disruptions are excluded:
 
@@ -102,7 +111,7 @@ To prevent **moral hazard**, the following disruptions are excluded:
 - voluntary worker absence
 
 # Platform Justification (Mobile-First)
-Winkit is deployed as a native Android Mobile Application (Kotlin + Jetpack Compose). A web app cannot support our hyper-local risk engine, which requires continuous GPS Telemetry and Background location access to accurately map the rider to a specific hexagonal grid for dynamic geospatial pricing.
+Winkit is deployed as a native Android Mobile Application (Kotlin + Jetpack Compose). A web app cannot support our hyper-local risk engine, which requires continuous GPS Telemetry and Background location access to accurately map the rider to a specific hexagonal grid for dynamic geospatial pricing. The users are payed in their UPI bank account.
 
 ### Insurer Dashboard
 
@@ -128,6 +137,7 @@ Routing Engine | NetworkX |
 Web Dashboard | Next.js |
 Maps | Mapbox / Leaflet |
 Notifications | Firebase Cloud Messaging |
+Payments | Razorpay Sandbox |
 
 # Integrating AI/ML (Premium Calculation & Fraud Detection)
 Winkit utilizes AI/ML across three distinct layers of the architecture to ensure accurate pricing and eliminate systemic abuse:
@@ -153,7 +163,7 @@ Verify Weather and Traffic Data
 ↓
 Validate Disruption Event
 ↓
-Trigger Automatic Payout`
+Trigger Automatic Payout to register UPI`
 
 ---
 
