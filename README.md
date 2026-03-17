@@ -85,7 +85,7 @@ Winkit utilizes AI/ML across three distinct layers of the architecture to ensure
 
 The system focuses only on **external, uncontrollable disruptions**.
 
-## Environmental Events
+### Environmental Events
 
 - Extreme heat (Heat Index threshold)
 - Heavy rainfall
@@ -95,13 +95,13 @@ The system focuses only on **external, uncontrollable disruptions**.
 - Low visibility (Fog / Smog)
 - Hazardous AQI
 
-## Infrastructure Events
+### Infrastructure Events
 
 - Dark store power failure
 - Warehouse fire / electrical failure
 - Telecom network outage
 
-## Traffic / Urban Events
+### Traffic / Urban Events
 
 - Major road closures
 - Accident hotspots
@@ -109,7 +109,7 @@ The system focuses only on **external, uncontrollable disruptions**.
 - Construction blockages
 - VIP movement restrictions
 
-## Regulatory / Government Restrictions
+### Regulatory / Government Restrictions
 
 - Section 144 curfews
 - Emergency lockdowns
