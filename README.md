@@ -88,6 +88,17 @@ As the platform scales, the β multiplier transitions from static data to an emp
 
 New users for whom no data is available are given a default score of the zone average.
 
+# Integrating AI/ML
+Winkit utilizes AI/ML across three distinct layers of the architecture to ensure accurate pricing and eliminate systemic abuse:
+
+- **Dynamic Premium Calculation (The β Multiplier):** The premium relies on β=1.0+Urisk​+Frisk​+Vzone​. As the platform scales, Vzone​ (geospatial penalty) transitions from static data to an empirical ML feedback loop. By mapping operational zones using Uber H3 Hexagonal Grids, the system tracks historical delivery failure rates per hexagon. If a specific street floods repeatedly, the algorithm automatically spikes the Vzone​ premium for that exact grid.
+
+- **Automated Fraud Detection ($F_{risk}$​):** Because the platform is 100% parametric, individual "fake claims" are impossible (a rider cannot claim it rained if the API says it is sunny). However, to protect the capital pool from systemic platform abuse, we include $F_{risk}$​, a dynamic fraud buffer that algorithmically scales based on suspicious user clustering or historically anomalous API data.
+
+- **Agentic AI for Unstructured Risk:** Weather provides structured probabilities, but civic risk (riots, curfews) does not. We integrate a lightweight Agentic AI layer utilizing the Gemini 2.5 Flash API. By parsing live local RSS news feeds through strict zero-shot prompts, the LLM acts as an extraction agent, returning a deterministic JSON probability of civic disruption to feed the math engine.
+
+- 
+  
 # Events
 ## Events Covered
 
@@ -138,20 +149,6 @@ Web Dashboard | Next.js |
 Maps | Mapbox / Leaflet |
 Notifications | Firebase Cloud Messaging |
 Payments | Razorpay Sandbox |
-
-# Integrating AI/ML (Premium Calculation & Fraud Detection)
-Winkit utilizes AI/ML across three distinct layers of the architecture to ensure accurate pricing and eliminate systemic abuse:
-
-- **Dynamic Premium Calculation (The β Multiplier):** The premium relies on β=1.0+Urisk​+Frisk​+Vzone​. As the platform scales, Vzone​ (geospatial penalty) transitions from static data to an empirical ML feedback loop. By mapping operational zones using Uber H3 Hexagonal Grids, the system tracks historical delivery failure rates per hexagon. If a specific street floods repeatedly, the algorithm automatically spikes the Vzone​ premium for that exact grid.
-
-- **Automated Fraud Detection (Frisk​):** Because the platform is 100% parametric, individual "fake claims" are impossible (a rider cannot claim it rained if the API says it is sunny). However, to protect the capital pool from systemic platform abuse, we include Frisk​, a dynamic fraud buffer that algorithmically scales based on suspicious user clustering or historically anomalous API data.
-
-- **Agentic AI for Unstructured Risk:** Weather provides structured probabilities, but civic risk (riots, curfews) does not. We integrate a lightweight Agentic AI layer utilizing the Gemini 2.5 Flash API. By parsing live local RSS news feeds through strict zero-shot prompts, the LLM acts as an extraction agent, returning a deterministic JSON probability of civic disruption to feed the math engine.
-
-
-# External Disruptions Covered
-
-The system focuses only on **external, uncontrollable disruptions**.
 
 
 Example reasoning pipeline:
