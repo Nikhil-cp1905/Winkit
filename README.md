@@ -3,7 +3,7 @@
 ### Guidewire DevTrails 2026 Submission
 
 Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce **(Blinkit/Zepto/Swiggy Instamart)**.
-It automatically compensates workers for income loss caused by external disruptions (extreme weather, civic unrest) using real-time data and zero-touch smart contracts.
+Winkit automatically compensates gig workers for income loss caused by external disruptions, such as extreme weather and civic unrest, using **real-time data** and **zero-touch smart contracts**. We are deploying the platform in strategic stages. The first stage establishes a secure foundation by focusing on **data collection, anomaly detection, and algorithmic fraud prevention**. This proprietary **data moat powers** our second stage: implementing advanced AI and **H3 Hexagonal Hierarchical Geospatial Indexing to hyper-localize risk across the operational zone**. By continuously **analyzing real-time news, weather updates, and traffic telemetry** within these spatial grids, Winkit maps the exact **physical reality of the streets** to **instantly trigger zero-touch claims.**
 
 # Target Persona
 Our target use is Q-commerce delivery rider operating on variable and shift-based earnings. If a sudden disruption occurs—like severe flooding or a government-mandated curfew—their income drops to zero. Traditional insurance cannot serve this demographic because the administrative cost of processing a ₹500 missed-shift claim is higher than the payout itself.
@@ -20,7 +20,7 @@ A rider operating near Potheri, Chennai, plans to work a 6-hour shift. The weath
 
 4. **Parametric Trigger:** Later that day, the Agentic AI confirms via news APIs that the road is fully blocked, hitting the disruption threshold.
 
-5. **Zero-Touch Payout:** Because the parametric condition is mathematically met, the system monitors the rider. Based on the number of deliveries that the rider received for that area and the amount of time that was required to take de-tour. By the end of shift, Winkit instantly deposits the ₹1500 (1 hours × ₹150) coverage into the rider's wallet. No claims adjusters, no manual verification.
+5. **Zero-Touch Payout:** Because the parametric condition is mathematically met, the system monitors the rider. Based on the number of deliveries that the rider received for that area and the amount of time that was required to take de-tour. By the end of shift, Winkit instantly deposits the ₹150 (1 hours × ₹150) coverage into the rider's wallet. No claims adjusters, no manual verification.
 
 # Weekly Premium Model and Parametric Triggers
 Winkit eliminates manual claim processing by tying payouts to objective, third-party data thresholds. The basic formula for this insurance policy is
@@ -29,12 +29,13 @@ $$
 \text{Pure Premium} = max(p_{weather},p_{civic}) \times L
 $$
 
-where \
+where, 
+
 $p_{weather}$ : the probability of precipitation or harsh weather  \
 $p_{civic}$ : riot, political movement ans other similar event \
 $L$ : payout
 
-To implement the model, we have dvided our implementation in 2 stages.
+To implement the model, we have divided our implementation in 2 stages.
 ## Stage 1 - C.O.L.D. Start
 Stage 1 establishes the security layer for the Winkit ecosystem through robust anomaly and fraud detection. By implementing a Risk Multiplier, we create a data-driven barrier against bad actors attempting to exploit threshold-based payouts. This "Cold Start" integrity is a prerequisite for the scaling logic introduced in Stage 2.
 
@@ -42,34 +43,45 @@ $$
 \beta = 1.0 + U_{weather} + F_{risk} + V_{zone}
 $$
 
-where \
+where, \
 $U_{weather}$ : unpredictability of weather \
-$F_{risk}$ : game risk, where all the users are penalised. \
-$V_{zone}$ : penalizing less developed area where chance of impact is higher. \
+$F_{risk}$ : game risk, where all the users are penalised based on history. New users are not penalized. \
+$V_{zone}$ : penalizing less developed area where chance of disruption impact is high. 
+
 
 ### $U_{weather}$
-
+---
 This is dependent on 2 values, binary variance and time decay. 
 We calculate the binary variance using bernoulli distribution where,
-**Binary Variance** \
-{variance} = p(1-p)\
+
+**Binary Variance** 
+
+$variance = p(1-p)$
 
 This value peaks to 0.25 when p = 0.5.
 
 **Time Decay**
-A forecast for tomorrow is highly reliable but the same could not be said for 5 days in future. We are calculating with with the help of theta decay.
-\ k&radic;t \
 
-Finally, $U_{weather} = k&radic;t + w.p(1-p)$ \
+A forecast for tomorrow is highly reliable but the same could not be said for 5 days in future. We are calculating with with the help of theta decay = $\ k&radic;t \$
+
+Finally, 
+
+$$U_{weather} = k&radic;t + w.p(1-p)$$ 
+
 here, \
-t = no. of days in the future \
-k = time constant(0.05) \
-p = pop(probability of precipitation) \
-w = variance weight constant 0.05 \
+$t$ = no. of days in the future \
+$k$ = time constant(0.05) \
+$p$ = pop(probability of precipitation) \
+$w$ = variance weight constant 0.05 \
 If a pre-agreed API threshold is crossed the policy executes automatically.
-
+## Stage 2 - Hyper-Localization & AI Data Moat
+As the platform scales, the β multiplier transitions from static data to an empirical ML feedback loop.
+- H3 Spatial Mapping: By mapping operational zones using Uber H3 Hexagonal Hierarchical Geospatial Indexing to hyper-localize risk across the operational zone, the system tracks historical delivery failure rates. If a specific street floods repeatedly, the algorithm automatically spikes the Vzone​ premium for that exact grid.
+  
+- Agentic AI: Weather provides structured probabilities, but civic risk (riots, curfews) does not. We integrate a lightweight Agentic AI layer utilizing the Gemini 2.5 Flash API. By parsing live local RSS news feeds through strict zero-shot prompts, the LLM returns a deterministic JSON probability of civic disruption to feed the math engine.
+  
 # Platform Justification (Mobile-First)
-Winkit is strictly deployed as a native Android Mobile Application (Kotlin + Jetpack Compose). A web app cannot support our hyper-local risk engine, which requires continuous GPS Telemetry and Background location access to accurately map the rider to a specific 174m hexagonal grid for dynamic geospatial pricing.
+Winkit is deployed as a native Android Mobile Application (Kotlin + Jetpack Compose). A web app cannot support our hyper-local risk engine, which requires continuous GPS Telemetry and Background location access to accurately map the rider to a specific hexagonal grid for dynamic geospatial pricing.
 ### Insurer Dashboard
 
 Built with **Next.js + React**.
@@ -89,7 +101,7 @@ Mobile | Kotlin + Jetpack Compose |
 Backend | FastAPI |
 Database | PostgreSQL + PostGIS |
 ML | Scikit-Learn |
-AI Agents | LangChain/Gemini |
+AI Agents | Gemini 2.5 Flash API (Direct Structured Outputs) |
 Routing Engine | NetworkX |
 Web Dashboard | Next.js |
 Maps | Mapbox / Leaflet |
@@ -161,29 +173,6 @@ Verify Weather and Traffic Data
 Validate Disruption Event
 ↓
 Trigger Automatic Payout`
-
----
-
-# Paid Relocation Engine
-
-If a **dark store becomes unavailable**, the system calculates the **nearest alternative store**.
-
-The system uses the **A* path planning algorithm**.
-
-Graph nodes represent:
-
-- road intersections
-- active dark stores
-
-Edge weights represent:
-
-- travel time
-- traffic conditions
-
-Computation:
-`Shortest Path → Alternate Dark Store`
-
-The worker receives **paid transit compensation** for relocation time.
 
 ---
 
