@@ -50,7 +50,6 @@ $V_{zone}$ : penalizing less developed area where chance of disruption impact is
 
 
 ### $U_{weather}$
----
 This is dependent on 2 values, binary variance and time decay. 
 We calculate the binary variance using bernoulli distribution where,
 
@@ -74,14 +73,37 @@ $k$ = time constant(0.05) \
 $p$ = pop(probability of precipitation) \
 $w$ = variance weight constant 0.05 \
 If a pre-agreed API threshold is crossed the policy executes automatically.
+
 ## Stage 2 - Hyper-Localization & AI Data Moat
 As the platform scales, the β multiplier transitions from static data to an empirical ML feedback loop.
 - H3 Spatial Mapping: By mapping operational zones using Uber H3 Hexagonal Hierarchical Geospatial Indexing to hyper-localize risk across the operational zone, the system tracks historical delivery failure rates. If a specific street floods repeatedly, the algorithm automatically spikes the Vzone​ premium for that exact grid.
   
 - Agentic AI: Weather provides structured probabilities, but civic risk (riots, curfews) does not. We integrate a lightweight Agentic AI layer utilizing the Gemini 2.5 Flash API. By parsing live local RSS news feeds through strict zero-shot prompts, the LLM returns a deterministic JSON probability of civic disruption to feed the math engine.
+
+# Events COVERED
+
+| Category | Event Types |
+| :--- | :--- |
+| **Environmental** | Heavy rainfall, Cyclones, Severe thunderstorms, Flooding, Low visibility (Fog / Smog) |
+| **Infrastructure** | Dark store power failure, Warehouse fire / electrical failure, Telecom network outage |
+| **Traffic / Urban** | Major road closures, Accident hotspots, Severe congestion, Construction blockages, VIP movement restrictions |
+| **Regulatory** | Section 144 curfews, Emergency lockdowns, Election restrictions, Festival crowd control zones, Protest zones |
+
+- Regulatory events that are in a 48h radius are not covered and are not liable to this policy.
+- If unplanned events continue for more than 1 week. The policy for next week will be on hold and not issued for the next week.
   
+# Events NOT Covered
+
+To prevent **moral hazard**, the following disruptions are excluded:
+
+- vendor strikes
+- supply chain stockouts
+- demand collapse
+- voluntary worker absence
+
 # Platform Justification (Mobile-First)
 Winkit is deployed as a native Android Mobile Application (Kotlin + Jetpack Compose). A web app cannot support our hyper-local risk engine, which requires continuous GPS Telemetry and Background location access to accurately map the rider to a specific hexagonal grid for dynamic geospatial pricing.
+
 ### Insurer Dashboard
 
 Built with **Next.js + React**.
@@ -120,47 +142,6 @@ Winkit utilizes AI/ML across three distinct layers of the architecture to ensure
 # External Disruptions Covered
 
 The system focuses only on **external, uncontrollable disruptions**.
-
-### Environmental Events
-
-- Extreme heat (Heat Index threshold)
-- Heavy rainfall
-- Cyclones
-- Severe thunderstorms
-- Flooding
-- Low visibility (Fog / Smog)
-- Hazardous AQI
-
-### Infrastructure Events
-
-- Dark store power failure
-- Warehouse fire / electrical failure
-- Telecom network outage
-
-### Traffic / Urban Events
-
-- Major road closures
-- Accident hotspots
-- Severe congestion
-- Construction blockages
-- VIP movement restrictions
-
-### Regulatory / Government Restrictions
-
-- Section 144 curfews
-- Emergency lockdowns
-- Election restrictions
-- Festival crowd control zones
-- Protest zones
-
-## Events NOT Covered
-
-To prevent **moral hazard**, the following disruptions are excluded:
-
-- vendor strikes
-- supply chain stockouts
-- demand collapse
-- voluntary worker absence
 
 
 Example reasoning pipeline:
