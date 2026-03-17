@@ -70,6 +70,30 @@ If a pre-agreed API threshold is crossed the policy executes automatically.
 
 # Platform Justification (Mobile-First)
 Winkit is strictly deployed as a native Android Mobile Application (Kotlin + Jetpack Compose). A web app cannot support our hyper-local risk engine, which requires continuous GPS Telemetry and Background location access to accurately map the rider to a specific 174m hexagonal grid for dynamic geospatial pricing.
+### Insurer Dashboard
+
+Built with **Next.js + React**.
+
+Features include:
+
+- disruption analytics
+- payout monitoring
+- geospatial event visualization
+- fraud detection insights
+
+# Tech Stack
+
+| Layer | Technology |
+|---|---|
+Mobile | Kotlin + Jetpack Compose |
+Backend | FastAPI |
+Database | PostgreSQL + PostGIS |
+ML | Scikit-Learn |
+AI Agents | LangChain/Gemini |
+Routing Engine | NetworkX |
+Web Dashboard | Next.js |
+Maps | Mapbox / Leaflet |
+Notifications | Firebase Cloud Messaging |
 
 # Integrating AI/ML (Premium Calculation & Fraud Detection)
 Winkit utilizes AI/ML across three distinct layers of the architecture to ensure accurate pricing and eliminate systemic abuse:
@@ -117,9 +141,7 @@ The system focuses only on **external, uncontrollable disruptions**.
 - Festival crowd control zones
 - Protest zones
 
----
-
-# Events NOT Covered
+## Events NOT Covered
 
 To prevent **moral hazard**, the following disruptions are excluded:
 
@@ -166,94 +188,8 @@ The worker receives **paid transit compensation** for relocation time.
 ---
 
 # System Architecture
-`Mobile App
-↓
-API Gateway (FastAPI)
-↓
-Event Detection Layer
-↓
-AI Risk Prediction Engine
-↓
-Trigger Validation (LangChain Agents)
-↓
-Payout Engine
-↓
-Wallet Service`
+image to be added here
 
-
-Core infrastructure components:
-
-- FastAPI backend
-- PostgreSQL + PostGIS
-- ML prediction service
-- LangChain agent system
-- notification pipeline
-
----
-
-# Mobile Application (Worker App)
-
-Developed using **Kotlin + Jetpack Compose**.
-
-Core features:
-
-- shift registration
-- dynamic weekly premium pricing
-- real-time disruption monitoring
-- automated payout notifications
-
----
-
-# Insurer Dashboard
-
-Built with **Next.js + React**.
-
-Features include:
-
-- disruption analytics
-- payout monitoring
-- geospatial event visualization
-- fraud detection insights
-
----
-
-# Tech Stack
-
-| Layer | Technology |
-|---|---|
-Mobile | Kotlin + Jetpack Compose |
-Backend | FastAPI |
-Database | PostgreSQL + PostGIS |
-ML | Scikit-Learn |
-AI Agents | LangChain |
-Routing Engine | NetworkX |
-Web Dashboard | Next.js |
-Maps | Mapbox / Leaflet |
-Notifications | Firebase Cloud Messaging |
-
----
-
-# Implementation Plan
-
-## Phase 1
-
-- UI wireframes
-- premium calculation engine
-- basic ML disruption prediction
-- trigger simulation
-
-## Phase 2
-
-- agentic validation system
-- relocation engine
-- dashboard analytics
-
-## Phase 3
-
-- real-time data integration
-- production-ready demonstration
-
----
 
 # Team
 
