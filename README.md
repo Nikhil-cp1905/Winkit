@@ -2,8 +2,52 @@
 
 ### Guidewire DevTrails 2026 Submission
 
-Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce (Blinkit, Zomato, Zepto).
+Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce **(Blinkit/Zepto/Swiggy Instamart)**.
+It automatically compensates workers for income loss caused by external disruptions (extreme weather, civic unrest) using real-time data and zero-touch smart contracts.
 
+# Target Persona
+Our target use is Q-commerce delivery rider operating on variable and shift-based earnings. If a sudden disruption occurs—like severe flooding or a government-mandated curfew—their income drops to zero. Traditional insurance cannot serve this demographic because the administrative cost of processing a ₹500 missed-shift claim is higher than the payout itself.
+
+## The Scenario
+A rider operating near Potheri, Chennai, plans to work a 6-hour shift. The weather forecast is clear, but a sudden political protest severely blocks the main GST Road. The rider is physically unable to safely deliver orders.
+
+## End-to-End Workflow
+1. **App Initialization:** The rider opens the Winkit app. The backend calculates their dynamic "Earning Velocity" (e.g., ₹150/hr) based on historical delivery ledger data.
+
+2. **Real-Time Risk Assessment:** The system instantly queries Weather APIs and our Agentic LLM (which reads live local RSS news feeds) to assess the probability of disruption.
+
+3. **Smart Quote:** The rider purchases a risk-adjusted micro-policy for a week.
+
+4. **Parametric Trigger:** Later that day, the Agentic AI confirms via news APIs that the road is fully blocked, hitting the disruption threshold.
+
+5. **Zero-Touch Payout:** Because the parametric condition is mathematically met, the system monitors the rider. Based on the number of deliveries that the rider received for that area and the amount of time that was required to take de-tour. By the end of shift, Winkit instantly deposits the ₹1500 (1 hours × ₹150) coverage into the rider's wallet. No claims adjusters, no manual verification.
+
+# Weekly Premium Model and Parametric Triggers
+Winkit eliminates manual claim processing by tying payouts to objective, third-party data thresholds. The basic formula for any insurance is
+
+$$
+\text{Pure Premium} = p \times L
+$$
+
+where \
+$p$ : the probability of loss  \
+$L$ : payout
+
+To implement the model, we have dvided our implementation in 2 stages.
+## Stage 1 - C.O.L.D. Start
+Stage 1 establishes the security layer for the Winkit ecosystem through robust anomaly and fraud detection. By implementing a Risk Multiplier, we create a data-driven barrier against bad actors attempting to exploit threshold-based payouts. This "Cold Start" integrity is a prerequisite for the scaling logic introduced in Stage 2.
+
+$$
+\beta = 1.0 + U_{weather} + F_{risk} + V_{zone}
+$$
+
+where \
+$U_{weather}$ : unpredictability of weather \
+$F_{risk}$ : game risk, where all the users are penalised. \
+$V_{zone}$ : penalizing less developed area where chance of impact is higher. \
+
+
+If a pre-agreed API threshold is crossed the policy executes automatically.
 The system automatically compensates workers for **income loss caused by external disruptions** such as:
 
 - extreme weather
