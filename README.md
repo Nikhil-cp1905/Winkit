@@ -97,7 +97,6 @@ Winkit utilizes AI/ML across three distinct layers of the architecture to ensure
 
 - **Agentic AI for Unstructured Risk:** Weather provides structured probabilities, but civic risk (riots, curfews) does not. We integrate a lightweight Agentic AI layer utilizing the Gemini 2.5 Flash API. By parsing live local RSS news feeds through strict zero-shot prompts, the LLM acts as an extraction agent, returning a deterministic JSON probability of civic disruption to feed the math engine.
 
-- 
   
 # Events
 ## Events Covered
@@ -222,6 +221,39 @@ The structure of our code base:
 **Mobile Client**: Built with Kotlin and Jetpack Compose, the mobile app acts as the primary data sensor. It handles:
  - Background Telemetry: Periodically pings the backend with encrypted location data to verify the rider is within their insured risk zone.
  - Instant Wallet: Displays real-time policy status and immediate payout notifications via Firebase.
+
+# Market Crash
+## The Problem
+A sophisticated syndicate of 500 delivery workers in a tier-1 city has successfully exploited a beta parametric insurance platform. Organizing via localized Telegram groups, they are using advanced GPS-spoofing applications to fake their locations. While resting safely at home, they are tricking the system into believing they are trapped in a severe, red-alert weather zone, triggering mass false payouts and instantly draining the liquidity pool.
+
+## Solution 
+TO solve this we deciding to implement multiple security measures and checks.
+In the current market there are 2 types of widely used for OS for phones, Android and iOS.
+The market share for Android users is 96% and only 4% for iOS users according to a study conducted by Incognia. 
+
+### Android Users
+We perform a series of checks and evaluation to prevent and detect location spoofing and other similar activities to the game the system.
+- **Developer Settings:** This is one of the most basic methods of perform location spoofing. For our app to work, it will need a basic requirement that developer setting remain disabled.
+- **Location Flags:** Check for mock location flags
+- **OS Signature:** Another method is to jail-break or rooting the mobile phone. We verify the cryptographic OS signature.
+- **Play integrity Attestation**
+- **IMU and GPS co-relation ** — the tool moves the GPS pin but cannot move the phone's accelerometer. GPS says moving at 25 km/h. So we can cross verify this data point.
+- **GPS Satellites Verification:** A phone typically utilizes 8 to 12 satellites at a given time to give GPS coordinates. For this verification, we take the raw GPS data input which includes:
+
+  - **PRN:** The ID of the satellite.
+
+  - **Azimuth:** The compass direction of the satellite.
+
+  - **Elevation:** The angle of the satellite above the horizon.
+
+  - **SNR / C/N0:** The signal-to-noise ratio.
+Using this data and cross-verifying with the actual position of the satellites we are able to determine the integerity of the data and GPS data
+
+### iOS Users
+OS protocols here are different. Possible places where spoofing can be done is tempering with iTunes protocols, using another devices with tools like iAnyGo, 3uTools, Dr.Fone and others. We cannot perform many tests that we did for Android users but since the security of iOS is already strong. These softwares are only able to inject 2D coordinates (altitude is hardcoded). Possible detection and prevention methods are:
+- **Z-axis flatlines:** Real GPS altitude fluctuates by ±5 metres even standing still
+- **Perfect coordinate smoothness:** movement paths are mathematically interpolated. No road jitter, no signal multipath, no micro-deceleration at turns.
+- **IMU and GPS co-relation:** The tool moves the GPS pin but cannot move the phone's accelerometer. GPS says moving at 25 km/h. So we can cross verify this data point.
 # Team
 
 **Astro Bugs**
