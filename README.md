@@ -191,6 +191,7 @@ The structure of our code base:
 │   └── settings.gradle.kts
 ├── gig_workers_db.csv
 ├── README.md
+├── requirements.txt 
 ├── services
 │   ├── civic_risk_agent.py
 │   ├── location_risk_service.py
