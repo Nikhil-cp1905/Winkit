@@ -163,7 +163,7 @@ Trigger Automatic Payout to register UPI`
 ---
 
 # System Architecture
-image to be added here
+<img width="4261" height="4799" alt="Risk Calculation Premium-2026-03-16-164650(1)" src="https://github.com/user-attachments/assets/4a57c743-8e9e-4a2d-957b-cf1cd74ea1a2" /> \
 
 # Implementation
 <img width="935" height="476" alt="Screenshot_20260318_182829" src="https://github.com/user-attachments/assets/87e1bc19-e038-420d-b3df-ea2684301e68" /> \
