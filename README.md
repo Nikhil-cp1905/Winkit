@@ -208,7 +208,7 @@ The structure of our code base:
 **Agentic AI Layer**: To solve the problem of unstructured civic risk, we utilize Gemini 2.5 Flash as a "Reasoning Agent."
 
 - `civic_risk_agent.py`: This service fetches local RSS feeds and news snippets. It uses structured output (JSON) to convert news headlines into a deterministic pcivic​ value between 0.0 and 1.0.
-- `weather_api_client.py`: Interacts with OpenWeather/Weatherstack to provide the $ p_{weather​} $ grounding data.
+- `weather_api_client.py`: Interacts with OpenWeather/Weatherstack to provide the $p_{weather​}$ grounding data.
 
 **Parametric Trigger & Evaluator**: This is the zero-touch layer.
 
