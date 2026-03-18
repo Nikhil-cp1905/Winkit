@@ -105,7 +105,6 @@ Winkit utilizes AI/ML across three distinct layers of the architecture to ensure
 | Category | Event Types |
 | :--- | :--- |
 | **Environmental** | Heavy rainfall, Cyclones, Severe thunderstorms, Flooding, Low visibility (Fog / Smog) |
-| **Infrastructure** | Dark store power failure, Warehouse fire / electrical failure, Telecom network outage |
 | **Traffic / Urban** | Major road closures, Accident hotspots, Severe congestion, Construction blockages, VIP movement restrictions |
 | **Regulatory** | Section 144 curfews, Emergency lockdowns, Election restrictions, Festival crowd control zones, Protest zones |
 
@@ -167,7 +166,56 @@ Trigger Automatic Payout to register UPI`
 # System Architecture
 image to be added here
 
+# Implementation
+The structure of our code base:
+```
+├── app.db
+├── core-backend
+│   ├── database.py
+│   ├── __pycache__
+│   └── worker_profile.py
+├── engine
+│   └── dynamic_pricing
+├── frontend
+│   ├── app
+│   ├── build.gradle.kts
+│   ├── gradle
+│   ├── gradle.properties
+│   ├── gradlew
+│   ├── gradlew.bat
+│   └── settings.gradle.kts
+├── gig_workers_db.csv
+├── README.md
+├── services
+│   ├── civic_risk_agent.py
+│   ├── location_risk_service.py
+│   └── weather_api_client.py
+├── test_flow.py
+├── trigger-workers
+│   └── event_evaluator.py
+└── WinkIt
 
+```
+
+**Core Risk Engine**: The heart of the program is `\engine`. It ingests real-time data to solve the β multiplier equation. We are yet to add the H3 Integration.
+
+**Agentic AI Layer**: To solve the problem of unstructured civic risk, we utilize Gemini 2.5 Flash as a "Reasoning Agent."
+
+- `civic_risk_agent.py`: This service fetches local RSS feeds and news snippets. It uses structured output (JSON) to convert news headlines into a deterministic pcivic​ value between 0.0 and 1.0.
+- `weather_api_client.py`: Interacts with OpenWeather/Weatherstack to provide the $ p_{weather​} $ grounding data.
+
+**Parametric Trigger & Evaluator**: This is the zero-touch layer.
+
+- `event_evaluator.py`: A background worker that constantly compares the pre-agreed policy thresholds against live data feeds. When a condition is met within a specific H3 hexagon, it flags all active policies in that grid for payout.
+
+**Backend & Data Persistence**
+
+- `database.py`: Manages the PostgreSQL/PostGIS instance.
+- `worker_profile.py`: Maintains the "Earning Velocity" and $F_{risk}​ (Fraud Score) for each rider, ensuring that payouts are proportional to actual historical performance.
+
+**Mobile Client**: Built with Kotlin and Jetpack Compose, the mobile app acts as the primary data sensor. It handles:
+ - Background Telemetry: Periodically pings the backend with encrypted location data to verify the rider is within their insured risk zone.
+ - Instant Wallet: Displays real-time policy status and immediate payout notifications via Firebase.
 # Team
 
 **Astro Bugs**
