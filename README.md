@@ -1,8 +1,8 @@
-# Winkit — Parametric Insurance for the Q-Commerce Workforce
+# Winkit — Providing instant BlinkSurance
 
 ### Guidewire DevTrails 2026 Submission
 
-Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce **(Blinkit/Zepto/Swiggy Instamart)**.
+Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce **(Blinkit/Zepto)**.
 Winkit automatically compensates gig workers for income loss caused by external disruptions, such as extreme weather and civic unrest, using **real-time data** and **zero-touch smart contracts**. We are deploying the platform in strategic stages. The first stage establishes a secure foundation by focusing on **data collection, anomaly detection, and algorithmic fraud prevention**. This proprietary **data moat powers** our second stage: implementing advanced AI and **H3 Hexagonal Hierarchical Geospatial Indexing to hyper-localize risk across the operational zone**. By continuously **analyzing real-time news, weather updates, and traffic telemetry** within these spatial grids, Winkit maps the exact **physical reality of the streets** to **instantly trigger zero-touch claims.**
 
 # Target Persona
@@ -22,18 +22,61 @@ A rider operating near Potheri, Chennai, plans to work a 6-hour shift. The weath
 
 5. **Zero-Touch Payout:** Because the parametric condition is mathematically met, the system monitors the rider. Based on the number of deliveries that the rider received for that area and the amount of time that was required to take de-tour. By the end of shift, Winkit instantly deposits the ₹150 (1 hours × ₹150) coverage into the rider's wallet. No claims adjusters, no manual verification.
 
+---
+
+# 🦄 Unicorn Ideas (Core and UNIQUE Innovations)
+
+Winkit goes beyond traditional parametric insurance by introducing **system-level innovations** that improve both worker outcomes and insurer efficiency.
+
+## 1. Paid Relocation Engine (A* Path Planning)
+
+### The Problem
+
+When a **single dark store goes offline** due to a localized disruption (power outage, protest, roadblock), delivery riders assigned to that store instantly lose income for the entire shift.
+
+Traditional insurance would:
+
+- pay full income loss (₹500–₹800)
+- increase insurer losses
+- create inefficiency in capital usage
+
+### The Winkit Approach
+
+Instead of paying for inactivity, Winkit enables **paid relocation to a nearby operational zone**.
+
+### How It Works
+
+1. A disruption is detected at a specific dark store
+2. The system queries nearby **active stores**
+3. A graph is constructed using road networks
+4. The **A\* path planning algorithm** computes the fastest route
+5. Transit time is calculated dynamically using traffic data
+6. Rider is offered a **paid relocation option**
+
+### Example
+<img width="1076" height="579" alt="Screenshot from 2026-03-19 10-37-32" src="https://github.com/user-attachments/assets/72f488e8-b2b6-4825-8d71-d9f56a01699b" />
+
+### Why This is Powerful
+
+- Reduces insurer payout (₹150 vs ₹600 full shift loss)
+- Keeps the rider **earning instead of idle**
+- Improves **system efficiency and capital sustainability**
+- Introduces **optimization into insurance**, not just compensation
+
+---
 # Weekly Premium Model and Parametric Triggers
 Winkit eliminates manual claim processing by tying payouts to objective, third-party data thresholds. The basic formula for this insurance policy is
 
 $$
-\text{Pure Premium} = max(p_{weather},p_{civic}) \times L
+\text{Premium} = [1 - (1 - p_{weather})(1 - p_{civic})] \times L \times \beta + platform fee
 $$
 
 where, 
 
 $p_{weather}$ : the probability of precipitation or harsh weather  \
 $p_{civic}$ : riot, political movement ans other similar event \
-$L$ : payout
+$L$ : payout \
+$\beta$ : risk multiplier
 
 To implement the model, we have divided our implementation in 2 stages.
 ## Stage 1 - C.O.L.D. Start
@@ -73,12 +116,6 @@ $k$ = time constant(0.05) \
 $p$ = pop(probability of precipitation) \
 $w$ = variance weight constant 0.05 \
 If a pre-agreed API threshold is crossed the policy executes automatically.
-
-The final premium payed by the user in the first stage is
-
-$$
-\text{Premium} = (max(p_{weather},p_{civic}) \times L  \times \beta) + Platform fee
-$$
 
 ## Stage 2 - Hyper-Localization & AI Data Moat
 As the platform scales, the β multiplier transitions from static data to an empirical ML feedback loop.
@@ -161,15 +198,23 @@ Validate Disruption Event
 Trigger Automatic Payout to register UPI`
 
 ---
+# System Architecture Overview
+<img width="4300" height="2000" alt="Screenshot from 2026-03-19 10-45-40" src="https://github.com/user-attachments/assets/73c2bb01-d976-4eb4-9805-fd9fd85ded56" />  
 
-# System Architecture
-<img width="4261" height="4799" alt="Risk Calculation Premium-2026-03-16-164650(1)" src="https://github.com/user-attachments/assets/4a57c743-8e9e-4a2d-957b-cf1cd74ea1a2" /> \
+# Premium Calculation Architecture
+ <img width="2739" height="2422" alt="mermaid-diagram-2026-03-19-180219" src="https://github.com/user-attachments/assets/b21fe5ed-e79b-4b87-bc1f-92203344bb89" />
 
 # Implementation
-<img width="935" height="476" alt="Screenshot_20260318_182829" src="https://github.com/user-attachments/assets/87e1bc19-e038-420d-b3df-ea2684301e68" /> \
+<img width="936" height="732" alt="image" src="https://github.com/user-attachments/assets/4520c54e-fd69-4ae5-9d54-3da0b214c111" />
+
 This is the prototype and basic working of the engine when a new user triggers the system
-<img width="935" height="481" alt="Screenshot_20260318_182854" src="https://github.com/user-attachments/assets/1849b190-0f7a-412c-9c7b-dabbbdea01b7" /> \
+
+<img width="936" height="732" alt="image" src="https://github.com/user-attachments/assets/928c2995-8246-4719-936a-c1dd24cfaaeb" />
+
 This is the prototype and basic working of the engine when a veteran user triggers the system
+
+# Flow Architecture
+<img width="1052" height="845" alt="Screenshot from 2026-03-19 10-47-12" src="https://github.com/user-attachments/assets/21ea8edf-b234-4e85-84de-33d9e0969cd2" />
 
 
 The structure of our code base:
@@ -191,6 +236,7 @@ The structure of our code base:
 │   └── settings.gradle.kts
 ├── gig_workers_db.csv
 ├── README.md
+├── requirements.txt 
 ├── services
 │   ├── civic_risk_agent.py
 │   ├── location_risk_service.py
