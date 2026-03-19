@@ -117,12 +117,6 @@ $p$ = pop(probability of precipitation) \
 $w$ = variance weight constant 0.05 \
 If a pre-agreed API threshold is crossed the policy executes automatically.
 
-The final premium payed by the user in the first stage is
-
-$$
-\text{Premium} = (max(p_{weather},p_{civic}) \times L  \times \beta) + Platform fee
-$$
-
 ## Stage 2 - Hyper-Localization & AI Data Moat
 As the platform scales, the β multiplier transitions from static data to an empirical ML feedback loop.
 - H3 Spatial Mapping: By mapping operational zones using Uber H3 Hexagonal Hierarchical Geospatial Indexing to hyper-localize risk across the operational zone, the system tracks historical delivery failure rates. If a specific street floods repeatedly, the algorithm automatically spikes the Vzone​ premium for that exact grid.
