@@ -3,33 +3,32 @@ from datetime import datetime, date, timedelta
 import sys
 import os
 
-# --- Pathing to root ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(os.path.dirname(current_dir))
 sys.path.append(root_dir)
 
 from config import OPENWEATHER_API_KEY
 from services.weather_api_client import WeatherAPIClient
-# NEW: Import your Agentic AI and the live news fetcher
 from services.civic_risk_agent import CivicRiskAgent, fetch_live_chennai_headlines
+from services.location_risk_service import LocationRiskService
 
 class DynamicPricingEngine:
     def __init__(self):
-        # Initialize Both Shared Services
+        # Initializing Services
         self.weather_client = WeatherAPIClient(api_key=OPENWEATHER_API_KEY, demo_mode=False)
         self.civic_agent = CivicRiskAgent()
+        self.location_service = LocationRiskService()
         
         # AI Tuning Constants
         self.k_time_decay = 0.05  
         self.w_variance = 0.40    
-        self.v_zone = 1.10        
         self.f_risk = 0.15        
-        self.base_cost_c = 10.00  
+        self.platform_fee = 10.00  
 
-    def calculate_weekly_premium(self, dynamic_v_loss: float) -> dict:
-        """Calculates the final Weekly Premium in INR using Multi-Peril Math."""
+    def calculate_weekly_premium(self, dynamic_v_loss: float, zone_name: str = "Potheri_GST") -> dict:
+        """Calculates the final Weekly Premium in INR using Multi-Peril Math and Empirical Localization."""
         
-        # 1. Ask the shared service for the weather data
+        # Fetching Weather Data
         raw_weather_data = self.weather_client.get_forecast()
         daily_pop = {}
         today = date.today()
@@ -40,60 +39,89 @@ class DynamicPricingEngine:
             if dt not in daily_pop or pop > daily_pop[dt]:
                 daily_pop[dt] = pop
 
-        # 2. Ask the Agentic AI for Live Civic Risk
+        # Fetch Live Agentic Civic Risk
         print("   -> Fetching and analyzing live Chennai news...")
         live_news = fetch_live_chennai_headlines(max_headlines=5)
-        civic_data = self.civic_agent.analyze_civic_risk(live_news)
-        
+        # Pass the zone_name so the agent can apply the Epicenter Multiplier if needed
+        civic_data = self.civic_agent.analyze_civic_risk(live_news, rider_zone=zone_name)
+ 
         base_p_civic = civic_data.get("p_civic", 0.0)
         civic_reason = civic_data.get("reason", "No disruption detected.")
-        print(f"   -> Agentic Civic Risk: {base_p_civic * 100}% ({civic_reason})")
+        print(f"   -> Adjusted Civic Risk: {base_p_civic * 100}% ({civic_reason})")
 
         last_known_pop = 0.0
         total_weekly_premium = 0.0
-        
-        # 3. The Multi-Peril Math Loop
+ 
+        previous_day_water_risk = 0.0
+        weather_forecast_log = []
+
         for t in range(7):
             target_date = today + timedelta(days=t)
-            
-            p_weather = daily_pop.get(target_date, last_known_pop)
+ 
             if target_date in daily_pop:
-                last_known_pop = p_weather
+                raw_p_weather = daily_pop[target_date]
+                last_known_pop = raw_p_weather
+            else:
+                # Decay the last known weather drastically because the forecast is over
+                raw_p_weather = last_known_pop * 0.2  
+                last_known_pop = raw_p_weather
 
-            # Decay the civic risk: A riot today is high risk, but likely clears up in a few days
-            # We use an exponential decay (e.g., halves every day)
+            # Decay the civic risk over the week
             p_civic = base_p_civic * (0.5 ** t)
 
-            # THE CORE MULTI-PERIL LOGIC: Take the maximum of the two risks
-            p_max = max(p_weather, p_civic)
+            # Hardcoding zone score for demonstration; in production, this would come from the LocationRiskService
+            v_zone_score = 0.25  
 
-            # 1. Calculate P_disruption based on the local zone
-            p_disruption = min((p_max * self.v_zone), 1.0)
+            # Boost today's rain risk based on bad infrastructure
+            infrastructure_multiplier = 1.0 + v_zone_score
+            boosted_p_weather = min(raw_p_weather * infrastructure_multiplier, 1.0)
 
-            # 2. Pure Expected Loss
-            expected_loss_el = p_disruption * dynamic_v_loss
+            # Calculate standing water spillover from yesterday
+            # 16-hour dry time = ~0.66 retention, scaled by how bad the drains are
+            spillover_retention = 0.66 * v_zone_score
+            waterlogging_risk = previous_day_water_risk * spillover_retention
 
-            # 3. Calculate U_weather (Theta Decay + Variance) using the dominant risk
+            # The final weather risk is the worse of the two
+            effective_p_weather = max(boosted_p_weather, waterlogging_risk)
+            
+            # Pass today's effective risk to tomorrow's loop
+            previous_day_water_risk = effective_p_weather 
+
+            
+            p_neither = (1.0 - effective_p_weather) * (1.0 - p_civic)
+            p_union = 1.0 - p_neither
+
+            # Expected Loss
+            expected_loss_el = p_union * dynamic_v_loss
+
+            # U_weather Risk Matrix (Using Union Probability)
             time_penalty = self.k_time_decay * math.sqrt(t)
-            variance_penalty = self.w_variance * (p_max * (1.0 - p_max))
+            variance_penalty = self.w_variance * (p_union * (1.0 - p_union))
             u_risk = time_penalty + variance_penalty
 
-            # 4. Final Risk Multiplier (Beta)
-            beta = 1.0 + u_risk + self.f_risk
+            # The Beta Multiplier (V_zone is removed from here!)
+            # We only add the base 1.0, the AI uncertainty, and the Fraud buffer
+            raw_beta = 1.0 + u_risk + self.f_risk
+            capped_beta = min(raw_beta, 2.5)
 
-            # 5. Final daily premium
-            daily_premium = expected_loss_el * beta
+            # Final daily premium calculation
+            daily_premium = capped_beta * expected_loss_el
             total_weekly_premium += daily_premium
+    
+            weather_forecast_log.append(round(raw_p_weather * 100))
+        # Add the flat platform fee to the weekly total
+        final_gross_premium = total_weekly_premium + self.platform_fee
         
-        final_gross_premium = total_weekly_premium + self.base_cost_c
+        v_zone_score=0.002
+        
+        # Add the flat platform fee to the weekly total
+        final_gross_premium = total_weekly_premium + self.platform_fee
 
         return {
             "final_weekly_premium_inr": round(final_gross_premium, 2),
-            "payout_coverage_inr": round(dynamic_v_loss, 2),
-            "dominant_civic_reason": civic_reason
+            "daily_payout_coverage_inr": round(dynamic_v_loss, 2),
+            "max_weekly_coverage_inr": round(dynamic_v_loss * 7, 2), 
+            "dominant_civic_reason": civic_reason,
+            "applied_v_zone_penalty_percent": round(v_zone_score * 100, 1),
+            "weather_forecast_log": weather_forecast_log  # <-- ADD THIS LINE
         }
-
-if __name__ == "__main__":
-    engine = DynamicPricingEngine()
-    quote = engine.calculate_weekly_premium(dynamic_v_loss=480.00)
-    print(f"\nStandalone Test Quote: ₹{quote['final_weekly_premium_inr']}")
