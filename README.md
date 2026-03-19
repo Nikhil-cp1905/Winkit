@@ -68,14 +68,15 @@ Instead of paying for inactivity, Winkit enables **paid relocation to a nearby o
 Winkit eliminates manual claim processing by tying payouts to objective, third-party data thresholds. The basic formula for this insurance policy is
 
 $$
-\text{Pure Premium} = max(p_{weather},p_{civic}) \times L
+\text{Premium} = [1 - (1 - p_{weather})(1 - p_{civic})] \times L \times \beta + platform fee
 $$
 
 where, 
 
 $p_{weather}$ : the probability of precipitation or harsh weather  \
 $p_{civic}$ : riot, political movement ans other similar event \
-$L$ : payout
+$L$ : payout \
+$\beta$ : risk multiplier
 
 To implement the model, we have divided our implementation in 2 stages.
 ## Stage 1 - C.O.L.D. Start
