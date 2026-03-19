@@ -1,5 +1,9 @@
 # Winkit — Providing instant BlinkSurance
 
+
+https://github.com/user-attachments/assets/aea4e84e-063c-46f7-a50c-9844131bd26d
+
+
 ### Guidewire DevTrails 2026 Submission
 
 Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce **(Blinkit/Zepto)**.
