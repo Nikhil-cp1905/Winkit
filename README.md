@@ -211,11 +211,11 @@ Trigger Automatic Payout to register UPI`
  <img width="2739" height="2422" alt="mermaid-diagram-2026-03-19-180219" src="https://github.com/user-attachments/assets/b21fe5ed-e79b-4b87-bc1f-92203344bb89" />
 
 # Implementation
- <img width="935" height="476" alt="Screenshot_20260318_182829" src="https://github.com/user-attachments/assets/87e1bc19-e038-420d-b3df-ea2684301e68" /> 
+<img width="936" height="732" alt="image" src="https://github.com/user-attachments/assets/4520c54e-fd69-4ae5-9d54-3da0b214c111" />
 
 This is the prototype and basic working of the engine when a new user triggers the system
 
-<img width="935" height="481" alt="Screenshot_20260318_182854" src="https://github.com/user-attachments/assets/1849b190-0f7a-412c-9c7b-dabbbdea01b7" /> 
+<img width="936" height="732" alt="image" src="https://github.com/user-attachments/assets/928c2995-8246-4719-936a-c1dd24cfaaeb" />
 
 This is the prototype and basic working of the engine when a veteran user triggers the system
 
