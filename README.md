@@ -208,10 +208,10 @@ Trigger Automatic Payout to register UPI`
 <img width="4300" height="2000" alt="Screenshot from 2026-03-19 10-45-40" src="https://github.com/user-attachments/assets/73c2bb01-d976-4eb4-9805-fd9fd85ded56" />  
 
 # Premium Calculation Architecture
-<img width="4261" height="4799" alt="Risk Calculation Premium-2026-03-16-164650(1)" src="https://github.com/user-attachments/assets/4a57c743-8e9e-4a2d-957b-cf1cd74ea1a2" />  
+ <img width="2739" height="2422" alt="mermaid-diagram-2026-03-19-180219" src="https://github.com/user-attachments/assets/b21fe5ed-e79b-4b87-bc1f-92203344bb89" />
 
 # Implementation
-<img width="935" height="476" alt="Screenshot_20260318_182829" src="https://github.com/user-attachments/assets/87e1bc19-e038-420d-b3df-ea2684301e68" /> 
+ <img width="935" height="476" alt="Screenshot_20260318_182829" src="https://github.com/user-attachments/assets/87e1bc19-e038-420d-b3df-ea2684301e68" /> 
 
 This is the prototype and basic working of the engine when a new user triggers the system
 
