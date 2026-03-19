@@ -2,7 +2,7 @@
 
 ### Guidewire DevTrails 2026 Submission
 
-Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce **(Blinkit/Zepto/Swiggy Instamart)**.
+Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce **(Blinkit/Zepto)**.
 Winkit automatically compensates gig workers for income loss caused by external disruptions, such as extreme weather and civic unrest, using **real-time data** and **zero-touch smart contracts**. We are deploying the platform in strategic stages. The first stage establishes a secure foundation by focusing on **data collection, anomaly detection, and algorithmic fraud prevention**. This proprietary **data moat powers** our second stage: implementing advanced AI and **H3 Hexagonal Hierarchical Geospatial Indexing to hyper-localize risk across the operational zone**. By continuously **analyzing real-time news, weather updates, and traffic telemetry** within these spatial grids, Winkit maps the exact **physical reality of the streets** to **instantly trigger zero-touch claims.**
 
 # Target Persona
