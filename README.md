@@ -1,4 +1,4 @@
-# Winkit — Parametric Insurance for the Q-Commerce Workforce
+# Winkit — Providing instant BlinkSurance
 
 ### Guidewire DevTrails 2026 Submission
 
@@ -22,6 +22,48 @@ A rider operating near Potheri, Chennai, plans to work a 6-hour shift. The weath
 
 5. **Zero-Touch Payout:** Because the parametric condition is mathematically met, the system monitors the rider. Based on the number of deliveries that the rider received for that area and the amount of time that was required to take de-tour. By the end of shift, Winkit instantly deposits the ₹150 (1 hours × ₹150) coverage into the rider's wallet. No claims adjusters, no manual verification.
 
+---
+
+# 🦄 Unicorn Ideas (Core and UNIQUE Innovations)
+
+Winkit goes beyond traditional parametric insurance by introducing **system-level innovations** that improve both worker outcomes and insurer efficiency.
+
+## 1. Paid Relocation Engine (A* Path Planning)
+
+### The Problem
+
+When a **single dark store goes offline** due to a localized disruption (power outage, protest, roadblock), delivery riders assigned to that store instantly lose income for the entire shift.
+
+Traditional insurance would:
+
+- pay full income loss (₹500–₹800)
+- increase insurer losses
+- create inefficiency in capital usage
+
+### The Winkit Approach
+
+Instead of paying for inactivity, Winkit enables **paid relocation to a nearby operational zone**.
+
+### How It Works
+
+1. A disruption is detected at a specific dark store
+2. The system queries nearby **active stores**
+3. A graph is constructed using road networks
+4. The **A\* path planning algorithm** computes the fastest route
+5. Transit time is calculated dynamically using traffic data
+6. Rider is offered a **paid relocation option**
+
+### Example
+<img width="1076" height="579" alt="Screenshot from 2026-03-19 10-37-32" src="https://github.com/user-attachments/assets/72f488e8-b2b6-4825-8d71-d9f56a01699b" />
+
+### Why This is Powerful
+
+- Reduces insurer payout (₹150 vs ₹600 full shift loss)
+- Keeps the rider **earning instead of idle**
+- Improves **system efficiency and capital sustainability**
+- Introduces **optimization into insurance**, not just compensation
+
+---
 # Weekly Premium Model and Parametric Triggers
 Winkit eliminates manual claim processing by tying payouts to objective, third-party data thresholds. The basic formula for this insurance policy is
 
@@ -161,8 +203,10 @@ Validate Disruption Event
 Trigger Automatic Payout to register UPI`
 
 ---
+# System Architecture Overview
+<img width="4300" height="2000" alt="Screenshot from 2026-03-19 10-45-40" src="https://github.com/user-attachments/assets/73c2bb01-d976-4eb4-9805-fd9fd85ded56" />
 
-# System Architecture
+# Premium Calculation Architecture
 <img width="4261" height="4799" alt="Risk Calculation Premium-2026-03-16-164650(1)" src="https://github.com/user-attachments/assets/4a57c743-8e9e-4a2d-957b-cf1cd74ea1a2" /> \
 
 # Implementation
@@ -170,6 +214,9 @@ Trigger Automatic Payout to register UPI`
 This is the prototype and basic working of the engine when a new user triggers the system
 <img width="935" height="481" alt="Screenshot_20260318_182854" src="https://github.com/user-attachments/assets/1849b190-0f7a-412c-9c7b-dabbbdea01b7" /> \
 This is the prototype and basic working of the engine when a veteran user triggers the system
+
+# Flow Architecture
+<img width="1052" height="845" alt="Screenshot from 2026-03-19 10-47-12" src="https://github.com/user-attachments/assets/21ea8edf-b234-4e85-84de-33d9e0969cd2" />
 
 
 The structure of our code base:
