@@ -78,18 +78,36 @@ $p_{civic}$ : riot, political movement ans other similar event \
 $L$ : payout \
 $\beta$ : risk multiplier
 
+Here to calculate the $p_{weather}$ \
+**Infrastructure Water Boosting($p_{boosted}$):** By mapping zones using Uber H3 Hexagons, the system tracks historical delivery failure rates to assign a $V_{zone}$​ vulnerability score. $V_{zone}$​ acts as an infrastructure multiplier on the weather itself.
+
+$$
+p_{boosted​}=min(p_{weather}​×(1.0+V_{zone}​),1.0)
+$$
+
+**Spillover Retention ($p_{spillover​}):** Weather risk doesn't reset at midnight. A massive storm on Monday creates a residual disruption risk on a perfectly sunny Tuesday. The system calculates standing water retention based on the zone's specific drainage capacity.
+
+$$
+p_{spillover}​=p_{yesterday}​×(0.66×V_{zone}​)
+$$
+
+**The Effective Weather Risk:** The final probability fed into the Union Probability pricing engine is simply whichever danger is higher—today's boosted rain falling from the sky, or yesterday's standing water trapped on the street:
+
+$$
+p_{effective}​=max(p_{boosted​}, p_{spillover}​)
+$$
+
 To implement the model, we have divided our implementation in 2 stages.
 ## Stage 1 - C.O.L.D. Start
 Stage 1 establishes the security layer for the Winkit ecosystem through robust anomaly and fraud detection. By implementing a Risk Multiplier, we create a data-driven barrier against bad actors attempting to exploit threshold-based payouts. This "Cold Start" integrity is a prerequisite for the scaling logic introduced in Stage 2.
 
 $$
-\beta = 1.0 + U_{weather} + F_{risk} + V_{zone}
+\beta = 1.0 + U_{weather} + F_{risk}
 $$
 
 where, \
 $U_{weather}$ : unpredictability of weather \
 $F_{risk}$ : game risk, where all the users are penalised based on history. New users are not penalized. \
-$V_{zone}$ : penalizing less developed area where chance of disruption impact is high. 
 
 
 ### $U_{weather}$
