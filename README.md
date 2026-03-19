@@ -85,7 +85,7 @@ $$
 p_{boosted​}=min(p_{weather}​×(1.0+V_{zone}​),1.0)
 $$
 
-**Spillover Retention ($p_{spillover​}):** Weather risk doesn't reset at midnight. A massive storm on Monday creates a residual disruption risk on a perfectly sunny Tuesday. The system calculates standing water retention based on the zone's specific drainage capacity.
+**Spillover Retention ($p_{spillover​}$):** Weather risk doesn't reset at midnight. A massive storm on Monday creates a residual disruption risk on a perfectly sunny Tuesday. The system calculates standing water retention based on the zone's specific drainage capacity.
 
 $$
 p_{spillover}​=p_{yesterday}​×(0.66×V_{zone}​)
