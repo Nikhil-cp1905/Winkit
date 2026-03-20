@@ -247,13 +247,49 @@ Trigger Automatic Payout to register UPI`
  <img width="2739" height="2422" alt="mermaid-diagram-2026-03-19-180219" src="https://github.com/user-attachments/assets/b21fe5ed-e79b-4b87-bc1f-92203344bb89" />
 
 # Implementation
+Follow these steps to implement our code in your local desktop.
+
+Clone the repo and setup the environment.
+```
+git clone https://github.com/your-username/Winkit.git
+cd Winkit
+
+# Create the virtual environment
+python -m venv .venv
+
+# Activate the virtual environment
+# On macOS/Linux:
+source .venv/bin/activate
+# On Windows:
+# .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+Create `config.py` to store API keys
+
+```
+GEMINI_API="your_google_gemini_api_key"
+OPENWEATHER_API_KEY="your_openweather_api_key"
+
+
+# Setting this to TRUE to API calls and simulate a Cyclone in Chennai.
+# This will allow you to test the Stateful Waterlogging Math without needing live API keys.
+DEMO_MODE=True
+```
+
+finally run the test script
+```
+python test_flow.py
+```
+
 <img width="936" height="732" alt="image" src="https://github.com/user-attachments/assets/4520c54e-fd69-4ae5-9d54-3da0b214c111" />
 
-This is the prototype and basic working of the engine when a new user triggers the system
+This is the prototype and basic working of the engine when a new user triggers the system.
 
 <img width="936" height="732" alt="image" src="https://github.com/user-attachments/assets/928c2995-8246-4719-936a-c1dd24cfaaeb" />
 
-This is the prototype and basic working of the engine when a veteran user triggers the system
+This is the prototype and basic working of the engine when a veteran user triggers the system.
 
 # Flow Architecture
 <img width="1052" height="845" alt="Screenshot from 2026-03-19 10-47-12" src="https://github.com/user-attachments/assets/21ea8edf-b234-4e85-84de-33d9e0969cd2" />
