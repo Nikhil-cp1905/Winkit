@@ -379,6 +379,7 @@ OS protocols here are different. Possible places where spoofing can be done is t
 - **Perfect coordinate smoothness:** movement paths are mathematically interpolated. No road jitter, no signal multipath, no micro-deceleration at turns.
 - **IMU and GPS co-relation:** The tool moves the GPS pin but cannot move the phone's accelerometer. GPS says moving at 25 km/h. So we can cross verify this data point.
 ---
+
 ## Development Roadmap
 
 ### Phase 1: Foundation & Core Architecture (Weeks 1–2) ✅
@@ -406,7 +407,19 @@ OS protocols here are different. Possible places where spoofing can be done is t
 * **Zero-Touch Escrow & Payouts:** Map the trigger evaluation worker (`event_evaluator.py`) directly to the Smart Escrow Wallet. Integrate the Razorpay sandbox to simulate instant UPI disbursements upon Agentic AI approval.
 * **Final Pitch Production:** Record the final end-to-end technical demo showcasing a localized disruption, the native app telemetry defense, the Next.js tracking dashboard, and the instant zero-touch payout.
 ---
+## What Makes Winkit Different
+_Five Innovations No Competitor Has Combined_
 
+1. **Uber H3 Hexagonal Hyper-Localization:** Every competing platform defines risk at the district or pin-code level. Winkit maps every operational zone using **Uber's H3 hexagonal grid at resolution 9** each hexagon covering ~0.1 km². We price each one independently. Why hexagons? Unlike square grids, every H3 cell has equidistant neighbors no corner-adjacency distortion. A flood affecting one hex affects its 6 neighbors with mathematically equal proximity. This geometric property makes spatial risk propagation clean and unambiguous.
+
+2. **$V_{zone}$ (The Infrastructure Vulnerability Score):** Each H3 hexagon accumulates a **$V_{zone}$ score** derived from historical delivery failure events within that exact cell. If a specific hex floods repeatedly, its V_zone rises automatically, no manual recalibration. This is Winkit's data moat: every disruption event makes pricing more accurate for that exact street. 
+
+3. **$p_{boosted}$ (Infrastructure-Weighted Weather Risk):** Standard parametric platforms ask: *"What is the probability of rain?"* Winkit asks: *"What is the probability of rain **causing income loss in this specific hex**?"* These are not the same question.
+
+4. **$p_{spillover}$ (Risk Doesn't Reset at Midnight):** **This is our most distinctive actuarial insight and no competitor has it.** Every parametric weather platform resets its risk model at midnight. Winkit does not. A massive storm on Monday creates standing water on Tuesday — even under a clear sky. Chennai's drainage infrastructure in low-lying zones retains water for 18–36 hours. A rider working Tuesday morning is still exposed to Monday's storm.
+
+5. **Satellite Ephemeris Verification: Fraud-Proof Physics:** GPS spoofing apps inject fake coordinates at the OS level. They cannot fake the physical geometry of satellites in orbit. Every GPS satellite broadcasts its position and those positions are **mathematically predictable to centimetre accuracy** from NASA and ISRO's NavIC ephemeris data. When a claim is filed, Winkit queries the raw `GnssStatus` API to capture the exact satellite constellation the device reports: PRN IDs, azimuth angles, elevation angles, and SNR values. Our backend computes the *expected sky plot* for the claimed coordinates at that exact timestamp.
+---
 # Team
 
 **Astro Bugs**
@@ -419,4 +432,3 @@ Nikhil | Web Dashboard |
 Amman | Product Strategy |
 
 ---
-
