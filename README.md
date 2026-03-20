@@ -44,7 +44,7 @@ A rider operating near Potheri, Chennai, plans to work a 6-hour shift. The weath
 - [System Architecture Overview](#system-architecture-overview)
 - [Implementation](#implementation)
 - [Market Crash](#market-crash)
-- [Development Roadmap](#roadmap)
+- [Development Roadmap](#development-roadmap)
 - [Team](#team)
 
 
