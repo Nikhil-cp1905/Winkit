@@ -3,14 +3,16 @@
 
 https://github.com/user-attachments/assets/aea4e84e-063c-46f7-a50c-9844131bd26d
 
-UI_DOCS- https://drive.google.com/file/d/1-nBodyZMe44uFsX5o8ZkT82nYkDGd6q3/view?usp=sharing
+## UI_DOCS
+https://drive.google.com/file/d/1-nBodyZMe44uFsX5o8ZkT82nYkDGd6q3/view?usp=sharing
+
 ### Guidewire DevTrails 2026 Submission
 ## Introduction
 
 Winkit is a **parametric micro-insurance platform** designed for India's gig-economy delivery workforce **(Blinkit/Zepto)**.
 Winkit automatically compensates gig workers for income loss caused by external disruptions, such as extreme weather and civic unrest, using **real-time data** and **zero-touch smart contracts**. We are deploying the platform in strategic stages. The first stage establishes a secure foundation by focusing on **data collection, anomaly detection, and algorithmic fraud prevention**. This proprietary **data moat powers** our second stage: implementing advanced AI and **H3 Hexagonal Hierarchical Geospatial Indexing to hyper-localize risk across the operational zone**. By continuously **analyzing real-time news, weather updates, and traffic telemetry** within these spatial grids, Winkit maps the exact **physical reality of the streets** to **instantly trigger zero-touch claims.**
 
-# Target Persona
+# Target Persona- Q-Commerce Delivery Rider
 Our target use is Q-commerce delivery rider operating on variable and shift-based earnings. If a sudden disruption occurs—like severe flooding or a government-mandated curfew—their income drops to zero. Traditional insurance cannot serve this demographic because the administrative cost of processing a ₹500 missed-shift claim is higher than the payout itself.
 
 ## The Scenario
@@ -42,6 +44,7 @@ A rider operating near Potheri, Chennai, plans to work a 6-hour shift. The weath
 - [System Architecture Overview](#system-architecture-overview)
 - [Implementation](#implementation)
 - [Market Crash](#market-crash)
+- [Development Roadmap](#roadmap)
 - [Team](#team)
 
 
@@ -339,6 +342,35 @@ OS protocols here are different. Possible places where spoofing can be done is t
 - **Z-axis flatlines:** Real GPS altitude fluctuates by ±5 metres even standing still
 - **Perfect coordinate smoothness:** movement paths are mathematically interpolated. No road jitter, no signal multipath, no micro-deceleration at turns.
 - **IMU and GPS co-relation:** The tool moves the GPS pin but cannot move the phone's accelerometer. GPS says moving at 25 km/h. So we can cross verify this data point.
+---
+## Development Roadmap
+
+### Phase 1: Foundation & Core Architecture (Weeks 1–2) ✅
+*Focus: Mathematical modeling, database scaffolding, and system design.*
+
+* **Persona & Scope:** Defined target Q-Commerce persona (shift-based, 2km radius) and mapped binary income loss scenarios (Environmental vs. Civic).
+* **Risk Math Engine:** Established the dynamic β multiplier logic and union probability models for unstructured civic risk and deterministic weather data.
+* **Backend Infrastructure:** Deployed the core FastAPI structure, established PostgreSQL/PostGIS database schemas for geospatial queries, and created the foundational API routing (`database.py`, `worker_profile.py`).
+* **Market Crash Strategy:** Architected the algorithmic defense against GPS spoofing syndicates (Z-axis flatline detection, GPS/IMU telemetry correlation).
+* **Hackathon Assets:** Completed the enterprise-focused README, Mermaid.js system architecture diagram, native UI sandbox, and the Phase 1 pitch video.
+
+### Phase 2: Agentic AI & Geospatial Engine (Weeks 3–4) 
+*Focus: Bringing the "Brain" and the Insurer Dashboard to life.*
+
+* **Agentic Risk Engine:** Implement the Gemini 2.5 Flash API service (`civic_risk_agent.py`) to parse live RSS news feeds through zero-shot prompts, outputting deterministic JSON risk scores for civic disruptions.
+* **ML Pricing Model:** Train the Scikit-Learn engine to calculate custom, shift-weighted weekly premiums based on historical disruption data and user risk vectors.
+* **Insurer Command Center:** Develop the Next.js + Tremor UI web dashboard for actuaries. Integrate Uber H3 Hexagonal mapping to visualize live risk zones and monitor the platform's financial exposure.
+* **Native Mobile MVP:** Connect the Kotlin + Jetpack Compose UI screens to the FastAPI backend, finalizing the onboarding, shift-selection, and dynamic policy checkout flows.
+
+### Phase 3: Telemetry Defense & Zero-Touch Payouts (Weeks 5–6) 🏁
+*Focus: Anti-spoofing hardware integration, automated routing, and the final financial triggers.*
+
+* **Hardware Defense Layer:** Finalize the native Android sensor-fusion logic. Cross-reference raw IMU (accelerometer/gyroscope) data with GPS NMEA telemetry to actively block spoofing apps and ensure absolute location integrity.
+* **Active Mitigation Engine:** Build out the NetworkX A* path planning logic to calculate paid relocation transit routes for riders trapped in localized blackout zones.
+* **Zero-Touch Escrow & Payouts:** Map the trigger evaluation worker (`event_evaluator.py`) directly to the Smart Escrow Wallet. Integrate the Razorpay sandbox to simulate instant UPI disbursements upon Agentic AI approval.
+* **Final Pitch Production:** Record the final end-to-end technical demo showcasing a localized disruption, the native app telemetry defense, the Next.js tracking dashboard, and the instant zero-touch payout.
+---
+
 # Team
 
 **Astro Bugs**
