@@ -3,7 +3,9 @@
 
 https://github.com/user-attachments/assets/aea4e84e-063c-46f7-a50c-9844131bd26d
 
-UI_DOCS- https://drive.google.com/file/d/1-nBodyZMe44uFsX5o8ZkT82nYkDGd6q3/view?usp=sharing
+## UI_DOCS
+https://drive.google.com/file/d/1-nBodyZMe44uFsX5o8ZkT82nYkDGd6q3/view?usp=sharing
+
 ### Guidewire DevTrails 2026 Submission
 ## Introduction
 
@@ -42,7 +44,7 @@ A rider operating near Potheri, Chennai, plans to work a 6-hour shift. The weath
 - [System Architecture Overview](#system-architecture-overview)
 - [Implementation](#implementation)
 - [Market Crash](#market-crash)
-- [6-Week Development Roadmap](#roadmap)
+- [Development Roadmap](#roadmap)
 - [Team](#team)
 
 
@@ -341,7 +343,7 @@ OS protocols here are different. Possible places where spoofing can be done is t
 - **Perfect coordinate smoothness:** movement paths are mathematically interpolated. No road jitter, no signal multipath, no micro-deceleration at turns.
 - **IMU and GPS co-relation:** The tool moves the GPS pin but cannot move the phone's accelerometer. GPS says moving at 25 km/h. So we can cross verify this data point.
 ---
-## 6-Week Development Roadmap
+## Development Roadmap
 
 ### Phase 1: Foundation & Core Architecture (Weeks 1–2) ✅
 *Focus: Mathematical modeling, database scaffolding, and system design.*
