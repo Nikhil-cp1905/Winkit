@@ -3,6 +3,7 @@
 
 https://github.com/user-attachments/assets/aea4e84e-063c-46f7-a50c-9844131bd26d
 
+UI_DOCS- https://drive.google.com/file/d/1-nBodyZMe44uFsX5o8ZkT82nYkDGd6q3/view?usp=sharing
 ### Guidewire DevTrails 2026 Submission
 ## Introduction
 
