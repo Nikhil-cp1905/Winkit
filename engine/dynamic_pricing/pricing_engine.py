@@ -2,7 +2,7 @@ import math
 from datetime import datetime, date, timedelta
 import sys
 import os
-
+from config import OPENWEATHER_API_KEY, DEMO_MODE
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(os.path.dirname(current_dir))
 sys.path.append(root_dir)
@@ -15,7 +15,7 @@ from services.location_risk_service import LocationRiskService
 class DynamicPricingEngine:
     def __init__(self):
         # Initializing Services
-        self.weather_client = WeatherAPIClient(api_key=OPENWEATHER_API_KEY, demo_mode=False)
+        self.weather_client = WeatherAPIClient(api_key=OPENWEATHER_API_KEY, demo_mode=DEMO_MODE)
         self.civic_agent = CivicRiskAgent()
         self.location_service = LocationRiskService()
         
