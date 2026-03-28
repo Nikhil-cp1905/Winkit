@@ -1,12 +1,14 @@
 import sys
 import os
+import time
 
+# Adjust path to import from root directory
 root_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(root_dir, "core-backend"))
-sys.path.append(os.path.join(root_dir, "engine", "dynamic_pricing"))
+sys.path.append(root_dir)
 
-from worker_profile import GigWorkerProfile
-from pricing_engine import DynamicPricingEngine
+from config import DEMO_MODE
+from services.event_evaluator import EventEvaluator
+from services.civic_risk_agent import fetch_live_chennai_headlines
 
 # Terminal Color Codes for UI polish
 class Colors:
@@ -20,67 +22,81 @@ class Colors:
     BOLD = '\033[1m'
 
 def run_integration_test():
-    print(f"{Colors.CYAN}{Colors.BOLD}Initializing Winkit Enterprise Risk Platform...{Colors.ENDC}\n")
+    print(f"{Colors.CYAN}{Colors.BOLD}Initializing Winkit Enterprise Risk Platform...{Colors.ENDC}")
+    if DEMO_MODE:
+        print(f"{Colors.WARNING}⚠️  DEMO_MODE is ON. Traffic telemetry will be mocked.{Colors.ENDC}\n")
+    else:
+        print(f"{Colors.GREEN}🌍 LIVE MODE is ON. Fetching real TomTom traffic data.{Colors.ENDC}\n")
+        
+    time.sleep(1)
+    
+    # 1. Initialize the Orchestrator
     try:
-        engine = DynamicPricingEngine() 
+        evaluator = EventEvaluator()
     except Exception as e:
-        print(f"{Colors.FAIL}Failed to initialize. Error: {e}{Colors.ENDC}")
+        print(f"{Colors.FAIL}Failed to initialize Event Evaluator. Error: {e}{Colors.ENDC}")
         return
-
-    test_cases = [
-        {"id": "RIDER_N_001", "zone": "OMR_Tech_Park"}, 
-        {"id": "RIDER_V_005", "zone": "Potheri_GST"}    
-    ]
-
-    for case in test_cases:
-        rider_id = case["id"]
-        operational_zone = case["zone"]
         
-        print(f"{Colors.BLUE}{'='*75}{Colors.ENDC}")
-        print(f"{Colors.BOLD} 📱 APP OPENED BY: {rider_id} | ZONE: {operational_zone} {Colors.ENDC}")
-        print(f"{Colors.BLUE}{'='*75}{Colors.ENDC}")
+    # 2. Fetch Live News for the Simulation
+    print(f"{Colors.HEADER}[1] FETCHING LIVE TELEMETRY & RSS FEEDS (CHENNAI){Colors.ENDC}")
+    time.sleep(1)
+    live_news = fetch_live_chennai_headlines(max_headlines=3)
+    for i, news in enumerate(live_news):
+        print(f"   {Colors.BLUE}>> {news}{Colors.ENDC}")
 
-        # Database Lookup
-        print(f"\n{Colors.HEADER}[1] WORKER LEDGER (SQLite){Colors.ENDC}")
-        profile = GigWorkerProfile(rider_id=rider_id)
-        e_hour_info = profile.calculate_e_hour()
-        
-        if e_hour_info.get("status") == "error":
-            print(f"    └── {Colors.FAIL}SYSTEM ACTION: Policy Rejected. Reason: {e_hour_info['message']}{Colors.ENDC}")
-            continue
-            
-        v_loss = profile.get_v_loss_coverage(covered_hours=4)
-        
-        print(f"    ├── Rider Status: {e_hour_info.get('rider_type')}")
-        print(f"    ├── Dynamic Wage: ₹{e_hour_info['e_hour']}/hr")
-        print(f"    └── Exposure Limit: ₹{v_loss}/day")
+    print("\n" + "="*75)
+    print(f"{Colors.BOLD} 🚨 COMMENCING LIVE PARAMETRIC EVALUATION (15-MIN CRON CYCLE) 🚨{Colors.ENDC}")
+    print("="*75)
 
-        # Risk Assessment
-        print(f"\n{Colors.HEADER}[2] AI RISK ASSESSMENT (Gemini 2.5 + OpenWeather){Colors.ENDC}")
-        print("    ├── Fetching live telemetry...")
-        quote = engine.calculate_weekly_premium(dynamic_v_loss=v_loss, zone_name=operational_zone)
-        
-        # Display Civic Reason
-        reason = quote['dominant_civic_reason']
-        short_reason = reason if len(reason) < 60 else reason[:57] + "..."
-        print(f"    ├── Civic Agent: {short_reason}")
-        
-        # Weather Forecast
-        print("    └── 7-Day Rain Forecast (PoP):")
-        forecast = quote.get("weather_forecast_log", [0]*7)
-        weather_str = ""
-        for day, pop in enumerate(forecast):
-            icon = "🌧️ " if pop > 40 else "☁️ " if pop > 10 else "☀️ "
-            weather_str += f"        Day {day}: {pop:2}% {icon}\n"
-        print(weather_str.rstrip())
+    # --- SCENARIO 1: The "Invisible" Flood ---
+    print(f"\n{Colors.HEADER}{Colors.BOLD}>>> SCENARIO 1: The 'Invisible' Flood (H3 Physics Engine){Colors.ENDC}")
+    print(f"{Colors.CYAN}Context: Sunny day (0% rain). But Rider is in a low-lying H3 Hexagon with standing water.{Colors.ENDC}")
+    time.sleep(2)
+    
+    evaluator.evaluate_worker_zone(
+        worker_id="WKT-1001",
+        lat=12.9815, lng=80.2230, # Low-lying Velachery coords
+        zone_name="Velachery",
+        raw_weather_api=0.00, 
+        live_news=["Traffic is smooth", "Clear skies"]
+    )
+    
+    time.sleep(3)
 
-        # Final Smart Quote
-        print(f"\n{Colors.GREEN}{Colors.BOLD}[3] 🏆 FINAL SMART QUOTE 🏆{Colors.ENDC}")
-        print(f"    ├── Daily Payout Limit:   ₹{quote['daily_payout_coverage_inr']:.2f}")
-        print(f"    ├── Max Weekly Coverage:  ₹{quote['max_weekly_coverage_inr']:.2f}")
-        print(f"    ├── Geospatial Penalty:   {Colors.WARNING}+{quote['applied_v_zone_penalty_percent']}%{Colors.ENDC} (Infrastructure Risk)")
-        print(f"    └── Total Weekly Premium: {Colors.GREEN}{Colors.BOLD}₹{quote['final_weekly_premium_inr']:.2f}{Colors.ENDC}")
-        print("\n")
+    # --- SCENARIO 2: The Agentic Override ---
+    print(f"\n{Colors.HEADER}{Colors.BOLD}>>> SCENARIO 2: The Agentic Override (Hardware vs Software){Colors.ENDC}")
+    print(f"{Colors.CYAN}Context: Fake news claims a 'Total Shutdown'. TomTom Traffic API checks the reality.{Colors.ENDC}")
+    time.sleep(2)
+    
+    evaluator.evaluate_worker_zone(
+        worker_id="WKT-2044",
+        lat=12.8236, lng=80.0435, # Potheri coords
+        zone_name="Potheri",
+        raw_weather_api=0.00,
+        live_news=["Section 144 imposed in Potheri", "Total Shutdown and riots!"]
+    )
+    
+    time.sleep(3)
+
+    # --- SCENARIO 3: The Multiplier Effect ---
+    print(f"\n{Colors.HEADER}{Colors.BOLD}>>> SCENARIO 3: The Multiplier Effect (Union Probability){Colors.ENDC}")
+    print(f"{Colors.CYAN}Context: Moderate Rain (30%) + Localized VIP Friction (30%). Do they compound?{Colors.ENDC}")
+    time.sleep(2)
+    
+    evaluator.evaluate_worker_zone(
+        worker_id="WKT-3099",
+        lat=12.8988, lng=80.2268, # OMR Tech Park coords
+        zone_name="OMR_Tech_Park",
+        raw_weather_api=0.30,
+        live_news=["VIP movement causing localized friction near OMR", "Traffic is slow"]
+    )
+
+    print(f"\n{Colors.GREEN}{Colors.BOLD}✅ ALL SMART CONTRACTS EVALUATED SUCCESSFULLY.{Colors.ENDC}\n")
+
 
 if __name__ == "__main__":
-    run_integration_test()
+    try:
+        run_integration_test()
+    except KeyboardInterrupt:
+        print(f"\n\n{Colors.FAIL}🛑 Simulation terminated by user.{Colors.ENDC}")
+        sys.exit(0)
