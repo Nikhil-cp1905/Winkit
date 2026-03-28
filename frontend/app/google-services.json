@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "63593366890",
+    "project_id": "winkit-ef384",
+    "storage_bucket": "winkit-ef384.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63593366890:android:24369b2019885ebeef5113",
+        "android_client_info": {
+          "package_name": "com.example.winkit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyOlhLd90ICDHA8lGLC6mmY7bAdiE-v6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
