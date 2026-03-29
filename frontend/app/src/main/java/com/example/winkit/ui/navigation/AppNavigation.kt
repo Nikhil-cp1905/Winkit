@@ -12,6 +12,7 @@ import com.example.winkit.ui.screens.dashboard.ShiftSafeDashboard
 import com.example.winkit.ui.screens.onboarding.IntegrationScreen
 import com.example.winkit.ui.screens.onboarding.LoginScreen
 import com.example.winkit.ui.screens.onboarding.ScheduleScreen
+import com.example.winkit.ui.screens.wallet.WalletScreen
 
 @Composable
 fun AppNavigation(isLoggedIn: Boolean, sharedPref: SharedPreferences) {
@@ -69,7 +70,9 @@ fun AppNavigation(isLoggedIn: Boolean, sharedPref: SharedPreferences) {
                 onTriggerAlert = { navController.navigate("alert") } 
             )
         }
-        
+        composable("wallet") {
+            WalletScreen()
+        }
         // --- SCREEN 7: DISASTER ALERT ---
         composable("alert") {
             RelocationAlertModal(
