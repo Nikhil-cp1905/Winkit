@@ -59,19 +59,20 @@ fun AppNavigation(isLoggedIn: Boolean, sharedPref: SharedPreferences) {
         // --- SCREEN 5: DASHBOARD ---
         composable("dashboard") {
             val mockState = DashboardState(
-                environment = EnvironmentType.CLEAR_DAY, 
+                environment = EnvironmentType.CLEAR_DAY,
                 wetBulbTemp = 24,
                 aqi = 85,
                 storeStatus = "ONLINE"
             )
-            
+
             ShiftSafeDashboard(
                 state = mockState,
-                onTriggerAlert = { navController.navigate("alert") } 
+                navController = navController, // <--- Pass it here
+                onTriggerAlert = { navController.navigate("alert") }
             )
         }
         composable("wallet") {
-            WalletScreen()
+            WalletScreen(navController = navController) // <--- Pass it here
         }
         // --- SCREEN 7: DISASTER ALERT ---
         composable("alert") {

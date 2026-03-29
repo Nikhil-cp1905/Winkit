@@ -31,6 +31,8 @@ import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import com.example.winkit.domain.models.DashboardState
 import com.example.winkit.domain.models.EnvironmentType
+import androidx.navigation.NavController
+import com.example.winkit.ui.components.ShiftSafeBottomNav
 
 // ── Colour tokens matching the screenshot ──────────────────────────────────
 private val BannerStart  = Color(0xFF5B2D8E)   // deep purple (left)
@@ -52,9 +54,14 @@ private val GpsIcon      = Color(0xFF5B2D8E)
 
 // ── Root composable (replaces ShiftSafeDashboard) ─────────────────────────
 @Composable
-fun ShiftSafeDashboard(state: DashboardState, onTriggerAlert: () -> Unit) {
+fun ShiftSafeDashboard(
+    state: DashboardState, 
+    navController: NavController, // <-- 1. ADDED THIS PARAMETER
+    onTriggerAlert: () -> Unit
+) {
     Scaffold(
-        bottomBar = { WinkitBottomNav() },
+        // <-- 2. SWAPPED TO THE REAL NAV BAR
+        bottomBar = { ShiftSafeBottomNav(navController = navController) }, 
         containerColor = PageBg
     ) { innerPadding ->
         Column(
@@ -76,11 +83,8 @@ fun ShiftSafeDashboard(state: DashboardState, onTriggerAlert: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 modifier   = Modifier.padding(horizontal = 16.dp)
             )
-
             Spacer(modifier = Modifier.height(12.dp))
-
             RiskMetricsGrid(state)
-
             Spacer(modifier = Modifier.height(20.dp))
 
             // ── 3. Live GPS Tracking ──────────────────────────────────────
@@ -90,7 +94,6 @@ fun ShiftSafeDashboard(state: DashboardState, onTriggerAlert: () -> Unit) {
         }
     }
 }
-
 // ── Weather banner ─────────────────────────────────────────────────────────
 @Composable
 fun WeatherBanner(state: DashboardState) {

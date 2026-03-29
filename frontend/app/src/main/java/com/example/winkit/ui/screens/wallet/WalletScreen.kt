@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.navigation.NavController
+import com.example.winkit.ui.components.ShiftSafeBottomNav
 
 // --- DATA MODELS ---
 data class Transaction(
@@ -36,7 +38,7 @@ data class Transaction(
 )
 
 @Composable
-fun WalletScreen() {
+fun WalletScreen(navController: NavController){
     // --- REAL-TIME STATE FOR HACKATHON DEMO ---
     var walletBalance by remember { mutableStateOf(620) }
     var totalEarnings by remember { mutableStateOf(1320) }
@@ -55,10 +57,11 @@ fun WalletScreen() {
     val getCurrentTime = { SimpleDateFormat("dd MMM 'at' hh:mm a", Locale.getDefault()).format(Date()) }
 
     Scaffold(
-        bottomBar = { FakeBottomNavigationBar() },
+        // REPLACED FakeBottomNavigationBar() with the real one!
+        bottomBar = { ShiftSafeBottomNav(navController = navController) }, 
         containerColor = Color(0xFFF8F9FA)
-    ) { paddingValues ->
-        LazyColumn(
+    ) { paddingValues ->        
+    LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -272,11 +275,3 @@ fun TransactionRow(tx: Transaction) {
     }
 }
 
-@Composable
-fun FakeBottomNavigationBar() {
-    NavigationBar(containerColor = Color.White, tonalElevation = 8.dp) {
-        NavigationBarItem(icon = { Icon(Icons.Default.Home, contentDescription = null) }, label = { Text("Home") }, selected = false, onClick = { })
-        NavigationBarItem(icon = { Icon(Icons.Default.AccountBalanceWallet, contentDescription = null) }, label = { Text("Wallet") }, selected = true, onClick = { }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Color(0xFF074768), selectedTextColor = Color(0xFF074768), indicatorColor = Color(0xFFE3F2FD)))
-        NavigationBarItem(icon = { Icon(Icons.Default.Person, contentDescription = null) }, label = { Text("Profile") }, selected = false, onClick = { })
-    }
-}
