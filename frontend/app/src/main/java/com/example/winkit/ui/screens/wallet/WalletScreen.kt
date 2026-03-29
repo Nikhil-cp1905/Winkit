@@ -23,87 +23,47 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.navigation.NavController
 import com.example.winkit.ui.components.ShiftSafeBottomNav
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 // --- DATA MODELS ---
-data class Transaction(
-    val id: String = UUID.randomUUID().toString(),
-    val title: String,
-    val type: String,
-    val amount: Int,
-    val isPositive: Boolean,
-    val timestamp: String,
-    val icon: ImageVector,
-    val iconBgColor: Color,
-    val iconTintColor: Color
-)
 
 @Composable
-fun WalletScreen(navController: NavController){
-    // --- REAL-TIME STATE FOR HACKATHON DEMO ---
-    var walletBalance by remember { mutableStateOf(620) }
-    var totalEarnings by remember { mutableStateOf(1320) }
-    var totalPayouts by remember { mutableStateOf(0) }
-
-    // Initial dummy data
-    val transactions = remember {
-        mutableStateListOf(
-            Transaction(title = "Delivery Earning (5km)", type = "EARNING", amount = 120, isPositive = true, timestamp = "20 Mar at 09:00 PM", icon = Icons.Default.ArrowOutward, iconBgColor = Color(0xFFE8F5E9), iconTintColor = Color(0xFF4CAF50)),
-            Transaction(title = "Paid relocation to alternate dark store", type = "RELOCATION PAYOUT", amount = 113, isPositive = true, timestamp = "20 Mar at 09:00 PM", icon = Icons.Default.NearMe, iconBgColor = Color(0xFFF3E5F5), iconTintColor = Color(0xFF9C27B0)),
-            Transaction(title = "Weekly Premium", type = "PREMIUM DEDUCTION", amount = 49, isPositive = false, timestamp = "20 Mar at 09:00 PM", icon = Icons.Default.Security, iconBgColor = Color(0xFFFFEBEE), iconTintColor = Color(0xFFF44336))
-        )
-    }
-
-    // Helper to get current time
-    val getCurrentTime = { SimpleDateFormat("dd MMM 'at' hh:mm a", Locale.getDefault()).format(Date()) }
-
+fun WalletScreen(
+    navController: NavController, 
+    viewModel: WalletViewModel
+) {
+    
     Scaffold(
-        // REPLACED FakeBottomNavigationBar() with the real one!
-        bottomBar = { ShiftSafeBottomNav(navController = navController) }, 
+        bottomBar = { ShiftSafeBottomNav(navController = navController) },
         containerColor = Color(0xFFF8F9FA)
-    ) { paddingValues ->        
-    LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
-            // 1. TOP BLUE WALLET CARD
+            // 1. Pass the ViewModel's state to the Card
             item {
-                WalletBalanceCard(walletBalance, totalEarnings, totalPayouts)
+                WalletBalanceCard(viewModel.walletBalance, viewModel.totalEarnings, viewModel.totalPayouts)
             }
 
-            // 2. SIMULATION ACTIONS (HACKATHON GOLD!)
+            // 2. Point the buttons to the ViewModel functions
             item {
                 SimulationActionsCard(
-                    onAddEarning = {
-                        walletBalance += 150; totalEarnings += 150
-                        transactions.add(0, Transaction(title = "Surge Gig Earning", type = "EARNING", amount = 150, isPositive = true, timestamp = getCurrentTime(), icon = Icons.Default.ArrowOutward, iconBgColor = Color(0xFFE8F5E9), iconTintColor = Color(0xFF4CAF50)))
-                    },
-                    onDeductPremium = {
-                        walletBalance -= 49
-                        transactions.add(0, Transaction(title = "Weekly Premium", type = "PREMIUM DEDUCTION", amount = 49, isPositive = false, timestamp = getCurrentTime(), icon = Icons.Default.Security, iconBgColor = Color(0xFFFFEBEE), iconTintColor = Color(0xFFF44336)))
-                    },
-                    onWeatherPayout = {
-                        walletBalance += 720; totalPayouts += 720
-                        transactions.add(0, Transaction(title = "Heavy Rainfall Coverage", type = "INSURANCE PAYOUT", amount = 720, isPositive = true, timestamp = getCurrentTime(), icon = Icons.Default.WaterDrop, iconBgColor = Color(0xFFE3F2FD), iconTintColor = Color(0xFF2196F3)))
-                    },
-                    onRelocationPayout = {
-                        walletBalance += 113; totalPayouts += 113
-                        transactions.add(0, Transaction(title = "Paid relocation to alternate store", type = "RELOCATION PAYOUT", amount = 113, isPositive = true, timestamp = getCurrentTime(), icon = Icons.Default.NearMe, iconBgColor = Color(0xFFF3E5F5), iconTintColor = Color(0xFF9C27B0)))
-                    }
+                    onAddEarning = { viewModel.simulateGigEarning() },
+                    onDeductPremium = { viewModel.deductPremium() },
+                    onWeatherPayout = { viewModel.simulateWeatherPayout() },
+                    onRelocationPayout = { viewModel.simulateRelocationPayout() }
                 )
             }
 
-            // 3. TRANSACTION HISTORY HEADER
             item {
                 Text("Transaction History", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1A1A1A), modifier = Modifier.padding(top = 8.dp))
             }
 
-            // 4. TRANSACTION LIST
-            items(transactions, key = { it.id }) { tx ->
+            // 3. Read the transactions list directly from the ViewModel
+            items(viewModel.transactions, key = { it.id }) { tx ->
                 TransactionRow(tx)
             }
 
@@ -111,7 +71,6 @@ fun WalletScreen(navController: NavController){
         }
     }
 }
-
 @Composable
 fun WalletBalanceCard(balance: Int, earnings: Int, payouts: Int) {
     Surface(
