@@ -33,6 +33,10 @@ import com.example.winkit.domain.models.DashboardState
 import com.example.winkit.domain.models.EnvironmentType
 import androidx.navigation.NavController
 import com.example.winkit.ui.components.ShiftSafeBottomNav
+import com.example.winkit.ui.screens.dashboard.DashboardViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 // ── Colour tokens matching the screenshot ──────────────────────────────────
 private val BannerStart  = Color(0xFF5B2D8E)   // deep purple (left)
@@ -55,7 +59,7 @@ private val GpsIcon      = Color(0xFF5B2D8E)
 // ── Root composable (replaces ShiftSafeDashboard) ─────────────────────────
 @Composable
 fun ShiftSafeDashboard(
-    state: DashboardState, 
+    viewModel: DashboardViewModel,
     navController: NavController, // <-- 1. ADDED THIS PARAMETER
     onTriggerAlert: () -> Unit
 ) {
@@ -71,7 +75,10 @@ fun ShiftSafeDashboard(
                 .verticalScroll(rememberScrollState())
         ) {
             // ── 1. Purple weather banner ──────────────────────────────────
-            WeatherBanner(state)
+            WeatherBanner(
+                temp = viewModel.temperature, 
+                condition = viewModel.weatherCondition
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -84,7 +91,11 @@ fun ShiftSafeDashboard(
                 modifier   = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
-            RiskMetricsGrid(state)
+            RiskMetricsGrid(
+                temp = viewModel.temperature,
+                rainProb = viewModel.rainProbability,
+                humidity = viewModel.humidity
+            )
             Spacer(modifier = Modifier.height(20.dp))
 
             // ── 3. Live GPS Tracking ──────────────────────────────────────
@@ -96,7 +107,10 @@ fun ShiftSafeDashboard(
 }
 // ── Weather banner ─────────────────────────────────────────────────────────
 @Composable
-fun WeatherBanner(state: DashboardState) {
+fun WeatherBanner(temp: String, condition: String) {
+val currentTime = remember { 
+        SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date()) 
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -150,26 +164,26 @@ fun WeatherBanner(state: DashboardState) {
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text     = "11:45 PM",
+                    text     = currentTime,
                     color    = Color.White.copy(alpha = 0.8f),
                     fontSize = 12.sp
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text       = "${state.wetBulbTemp}°C",
+           Text(
+                text       = "$temp°C", // LIVE DATA!
                 color      = Color.White,
                 fontSize   = 52.sp,
                 fontWeight = FontWeight.Black,
                 lineHeight = 56.sp
             )
             Text(
-                text       = "Cloudy",
+                text       = condition, // LIVE DATA!
                 color      = Color.White.copy(alpha = 0.9f),
                 fontSize   = 16.sp,
                 fontWeight = FontWeight.Medium
-            )
-        }
+            )       
+      }
 
         // Right side lower: cloudy moon illustration placeholder + coverage pill
         Column(
@@ -284,11 +298,17 @@ fun CoveragePill() {
 
 // ── 2×2 Risk Metrics Grid ─────────────────────────────────────────────────
 @Composable
-fun RiskMetricsGrid(state: DashboardState) {
-    val wetBulbRisk = if (state.wetBulbTemp > 30) "HIGH" else "MODERATE"
-    val wetBulbColor = if (state.wetBulbTemp > 30) TagPoor else TagModerate
-    val aqiRisk  = if (state.aqi > 300) "POOR" else if (state.aqi > 150) "MODERATE" else "GOOD"
-    val aqiColor = if (state.aqi > 300) TagPoor else if (state.aqi > 150) TagModerate else TagLow
+fun RiskMetricsGrid(temp: String, rainProb: String, humidity: String) {
+    // Safely convert the live string temp to an Int for our logic
+    val tempInt = temp.toIntOrNull() ?: 24 
+    
+    val wetBulbRisk = if (tempInt > 30) "HIGH" else "MODERATE"
+    val wetBulbColor = if (tempInt > 30) TagPoor else TagModerate
+    
+    // Mock AQI for the demo (since OpenWeather free doesn't include it)
+    val mockAqi = 85
+    val aqiRisk  = if (mockAqi > 300) "POOR" else if (mockAqi > 150) "MODERATE" else "GOOD"
+    val aqiColor = if (mockAqi > 300) TagPoor else if (mockAqi > 150) TagModerate else TagLow
 
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -297,21 +317,21 @@ fun RiskMetricsGrid(state: DashboardState) {
                 modifier  = Modifier.weight(1f),
                 iconVector = Icons.Default.Thermostat,
                 iconTint  = Color(0xFFFF7043),
-                tag       = wetBulbRisk,
-                tagColor  = wetBulbColor,
-                value     = "${state.wetBulbTemp}°C",
-                label     = "Wet Bulb Temp"
+                tag       = "LIVE",
+                tagColor  = TagModerate,
+                value     = "$temp°C", // LIVE DATA!
+                label     = "Est. Wet Bulb Temp"
             )
             // Rain Probability card
             RiskCard(
                 modifier  = Modifier.weight(1f),
                 iconVector = Icons.Default.WaterDrop,
                 iconTint  = Color(0xFF5C9EE8),
-                tag       = "LOW",
+                tag       = "UPDATED",
                 tagColor  = TagLow,
-                value     = "10%",
+                value     = rainProb, // LIVE DATA!
                 label     = "Rain Probability"
-            )
+            )       
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -322,7 +342,7 @@ fun RiskMetricsGrid(state: DashboardState) {
                 iconTint  = Color(0xFF78909C),
                 tag       = aqiRisk,
                 tagColor  = aqiColor,
-                value     = "${state.aqi}",
+                value     = "$mockAqi", // Mocked for demo
                 label     = "Air Quality Index"
             )
             // Primary Hub card
@@ -330,9 +350,9 @@ fun RiskMetricsGrid(state: DashboardState) {
                 modifier  = Modifier.weight(1f),
                 iconVector = Icons.Default.Store,
                 iconTint  = Color(0xFF26A69A),
-                tag       = state.storeStatus.uppercase(),
+                tag       = "ONLINE", // Mocked for demo
                 tagColor  = TagOpen,
-                value     = "potheri",       // wire to state.hubName if available
+                value     = "Velachery", // Hardcoded to match our static map
                 label     = "Primary Hub"
             )
         }
@@ -439,57 +459,39 @@ fun GpsTrackingSection() {
         Spacer(modifier = Modifier.height(12.dp))
 
         // Destination card
+        // Real Static Map Card using OpenStreetMap
         Card(
             shape     = RoundedCornerShape(16.dp),
-            colors    = CardDefaults.cardColors(containerColor = CardBg),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            modifier  = Modifier.fillMaxWidth()
+            modifier  = Modifier.fillMaxWidth().height(160.dp) // Taller to show the map
         ) {
-            Row(
-                modifier            = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalAlignment   = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(GpsIcon.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Live Map Image (Centered on Chennai)
+                AsyncImage(
+                    model = "https://static-maps.yandex.ru/1.x/?ll=80.2230,12.9815&z=13&l=map&size=600,300",
+                    contentDescription = "Live Map",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+                
+                // Overlay Info Box at the bottom
+                Surface(
+                    color = Color.White.copy(alpha = 0.9f),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector        = Icons.Default.LocationOn,
-                            contentDescription = null,
-                            tint               = GpsIcon,
-                            modifier           = Modifier.size(18.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text       = "DELIVERY DESTINATION",
-                            color      = TextGray,
-                            fontSize   = 10.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            letterSpacing = 0.5.sp
-                        )
-                        Text(
-                            text       = "Tap to set destination",
-                            color      = TextDark,
-                            fontSize   = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = GpsIcon)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text("CURRENT ZONE", color = TextGray, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                            Text("Velachery, Chennai", color = TextDark, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
-                Text(
-                    text       = "Edit",
-                    color      = NavSelected,
-                    fontSize   = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
             }
         }
     }

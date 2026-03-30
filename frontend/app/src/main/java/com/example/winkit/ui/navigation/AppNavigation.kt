@@ -16,12 +16,14 @@ import com.example.winkit.ui.screens.onboarding.LoginScreen
 import com.example.winkit.ui.screens.onboarding.ScheduleScreen
 import com.example.winkit.ui.screens.wallet.WalletScreen
 import com.example.winkit.ui.screens.wallet.WalletViewModel
+import com.example.winkit.ui.screens.dashboard.DashboardViewModel // Add import
 
 @Composable
 fun AppNavigation(isLoggedIn: Boolean, sharedPref: SharedPreferences) {
     val navController = rememberNavController()
     // Create the global ViewModel here
     val walletViewModel: WalletViewModel = viewModel()
+    val dashboardViewModel: DashboardViewModel = viewModel() // ADD THIS
 
     // 🔴 HARDCODED FOR DEMO: Always boot to the login screen!
     val startDest = "login"
@@ -74,15 +76,8 @@ fun AppNavigation(isLoggedIn: Boolean, sharedPref: SharedPreferences) {
 
         // --- SCREEN 5: DASHBOARD ---
         composable("dashboard") {
-            val mockState = DashboardState(
-                environment = EnvironmentType.CLEAR_DAY,
-                wetBulbTemp = 24,
-                aqi = 85,
-                storeStatus = "ONLINE"
-            )
-
             ShiftSafeDashboard(
-                state = mockState,
+                viewModel = dashboardViewModel, // PASSED HERE
                 navController = navController,
                 onTriggerAlert = { navController.navigate("alert") }
             )

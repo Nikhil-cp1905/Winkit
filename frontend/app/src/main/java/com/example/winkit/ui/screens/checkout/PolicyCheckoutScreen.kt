@@ -32,6 +32,13 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import com.example.winkit.data.NetworkModule
+import kotlinx.coroutines.delay
 
 // Defines the 4 stages of this screen
 enum class CheckoutStep {
@@ -42,24 +49,45 @@ enum class CheckoutStep {
 fun PolicyCheckoutScreen(onBack: () -> Unit, onPaymentSuccess: () -> Unit) {
     var currentStep by remember { mutableStateOf(CheckoutStep.ANALYZING) }
 
-    // AI Analysis Sequence (Runs automatically when screen opens)
+    // --- ADD THESE MISSING STATE VARIABLES ---
+    var weeklyPremium by remember { mutableStateOf("132") }
+    var maxPayout by remember { mutableStateOf("800") }
+
+    // AI Analysis & API Call Sequence
     LaunchedEffect(Unit) {
-        delay(3500) // Spin the AI radar for 3.5 seconds
-        currentStep = CheckoutStep.OFFER
+        try {
+            // 1. Ask Supabase for the pre-calculated offer
+            val responseList = NetworkModule.api.getOfferForRider("eq.WKT-1001")
+
+            if (responseList.isNotEmpty()) {
+                val offer = responseList.first()
+                // This updates the UI with the live database numbers!
+                weeklyPremium = offer.weekly_premium.toInt().toString()
+                maxPayout = offer.max_payout.toInt().toString()
+            }
+
+            delay(3000)
+            currentStep = CheckoutStep.OFFER
+
+        } catch (e: Exception) {
+            Log.e("SupabaseError", "Failed to fetch from DB: ${e.message}")
+            delay(3000)
+            currentStep = CheckoutStep.OFFER
+        }
     }
 
     // Payment Processing Sequence
- LaunchedEffect(currentStep) {
+    LaunchedEffect(currentStep) {
         when (currentStep) {
             CheckoutStep.PROCESSING_PAYMENT -> {
-                delay(2000) // Fake UPI processing time
-                currentStep = CheckoutStep.SUCCESS // This safely triggers the next step below!
+                delay(2000)
+                currentStep = CheckoutStep.SUCCESS
             }
             CheckoutStep.SUCCESS -> {
-                delay(1500) // Let them read the success message
-                onPaymentSuccess() // Blast off to the Dashboard!
+                delay(1500)
+                onPaymentSuccess()
             }
-            else -> { /* Do nothing for ANALYZING or OFFER */ }
+            else -> { }
         }
     }
     Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF5F7FA))) {
