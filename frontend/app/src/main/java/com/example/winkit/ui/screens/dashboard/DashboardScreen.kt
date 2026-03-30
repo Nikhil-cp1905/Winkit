@@ -37,8 +37,12 @@ import com.example.winkit.ui.screens.dashboard.DashboardViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.foundation.BorderStroke
+import android.view.ViewGroup
 
-// ── Colour tokens matching the screenshot ──────────────────────────────────
 private val BannerStart  = Color(0xFF5B2D8E)   // deep purple (left)
 private val BannerEnd    = Color(0xFF8B3FBF)   // violet (right)
 private val StarDot      = Color(0xCCFFFFFF)
@@ -56,15 +60,14 @@ private val NavUnselected= Color(0xFFB0B0C0)
 private val GpsBg        = Color(0xFFF8F9FF)
 private val GpsIcon      = Color(0xFF5B2D8E)
 
-// ── Root composable (replaces ShiftSafeDashboard) ─────────────────────────
+// ── Root composable ───────────────────────────────────────────────────────
 @Composable
 fun ShiftSafeDashboard(
-    viewModel: DashboardViewModel,
-    navController: NavController, // <-- 1. ADDED THIS PARAMETER
+    viewModel: DashboardViewModel, 
+    navController: NavController,
     onTriggerAlert: () -> Unit
 ) {
     Scaffold(
-        // <-- 2. SWAPPED TO THE REAL NAV BAR
         bottomBar = { ShiftSafeBottomNav(navController = navController) }, 
         containerColor = PageBg
     ) { innerPadding ->
@@ -98,10 +101,15 @@ fun ShiftSafeDashboard(
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            // ── 3. Live GPS Tracking ──────────────────────────────────────
+            // ── 3. Live GPS Tracking (Interactive Map) ────────────────────
             GpsTrackingSection()
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // ── 4. Active Policies ────────────────────────────────────────
+            ActivePoliciesSection()
+
+            Spacer(modifier = Modifier.height(32.dp)) // Extra padding for the bottom scroll
         }
     }
 }
@@ -459,24 +467,106 @@ fun GpsTrackingSection() {
         Spacer(modifier = Modifier.height(12.dp))
 
         // Destination card
-        // Real Static Map Card using OpenStreetMap
         Card(
             shape     = RoundedCornerShape(16.dp),
+            colors    = CardDefaults.cardColors(containerColor = CardBg),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            modifier  = Modifier.fillMaxWidth().height(160.dp) // Taller to show the map
+            modifier  = Modifier.fillMaxWidth().height(220.dp) // Taller to show the map
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // Live Map Image (Centered on Chennai)
-                AsyncImage(
-                    model = "https://static-maps.yandex.ru/1.x/?ll=80.2230,12.9815&z=13&l=map&size=600,300",
-                    contentDescription = "Live Map",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
                 
-                // Overlay Info Box at the bottom
+                // 1. THE FREE, INTERACTIVE OPENSTREETMAP
+                AndroidView(
+                    factory = { context ->
+                        android.webkit.WebView(context).apply {
+                            // FIX 1: FORCE THE SIZE SO IT ISN'T INVISIBLE
+                            layoutParams = ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT
+                            )
+                            
+                            settings.apply {
+                                javaScriptEnabled = true
+                                domStorageEnabled = true
+                                // FIX 2: Allow it to fetch HTTP tiles on an HTTPS fake domain
+                                mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                            }
+                            
+                            webViewClient = android.webkit.WebViewClient()
+                            
+                            // FIX 3: Route website errors to Logcat so we can see them!
+                            webChromeClient = object : android.webkit.WebChromeClient() {
+                                override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
+                                    android.util.Log.e("MapError", "MAP JS: ${consoleMessage?.message()}")
+                                    return true
+                                }
+                            }
+                            
+                            val htmlData = """
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                                    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                                    <style>
+                                        body { padding: 0; margin: 0; background-color: #f3f4f8; }
+                                        html, body, #map { height: 100%; width: 100%; }
+                                        .leaflet-control-attribution { display: none; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div id="map"></div>
+                                    <script>
+                                        var map = L.map('map', {zoomControl: false}).setView([12.9815, 80.2230], 14);
+                                        
+                                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                            maxZoom: 19
+                                        }).addTo(map);
+                                        
+                                        var hazardZone = L.circle([12.9815, 80.2230], {
+                                            color: '#E65100',
+                                            fillColor: '#FF9800',
+                                            fillOpacity: 0.4,
+                                            radius: 800
+                                        }).addTo(map);
+                                    </script>
+                                </body>
+                                </html>
+                            """.trimIndent()
+                            
+                            // Load using the fake secure origin
+                            loadDataWithBaseURL("https://app.local/", htmlData, "text/html", "UTF-8", null)
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )                // 2. MOCK "TRAFFIC CLOSURE" OVERLAY (Hackathon magic!)
                 Surface(
-                    color = Color.White.copy(alpha = 0.9f),
+                    color = Color(0xFFFFF3E0), // Light orange warning background
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.padding(12.dp).align(Alignment.TopStart),
+                    border = BorderStroke(1.dp, Color(0xFFFFB74D))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFFE65100))
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "100ft Road Closed (Waterlogging)", 
+                            color = Color(0xFFE65100), 
+                            fontSize = 10.sp, 
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // 3. YOUR BOTTOM OVERLAY ("CURRENT ZONE")
+                Surface(
+                    color = Color.White.copy(alpha = 0.95f),
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                     modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()
                 ) {
@@ -496,7 +586,6 @@ fun GpsTrackingSection() {
         }
     }
 }
-
 // ── Bottom Navigation ──────────────────────────────────────────────────────
 @Composable
 fun WinkitBottomNav() {
@@ -557,4 +646,91 @@ fun WinkitBottomNav() {
 fun AnimatedWeatherBanner(type: EnvironmentType) {
     // Kept to avoid breaking any other call sites.
     // The new WeatherBanner(state) is used inside ShiftSafeDashboard above.
+}
+// ── Active Policies Section ────────────────────────────────────────────────
+@Composable
+fun ActivePoliciesSection() {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        // Header
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Active Policies",
+                color = Color(0xFF1A1A2E), // TextDark
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "View All",
+                color = Color(0xFF5B2D8E), // NavSelected (Purple)
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Policy Card
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            border = BorderStroke(1.dp, Color(0xFFE0E6ED)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Icon Circle
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFF3F4F8)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Description,
+                            contentDescription = "Policy",
+                            tint = Color(0xFF5A7184),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    
+                    // Text
+                    Column {
+                        Text(
+                            text = "Gig Protect Weekly",
+                            color = Color(0xFF1A1A2E),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Auto-renews on 22 Mar",
+                            color = Color(0xFF8E8E9A),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+                
+                // Chevron Arrow
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = "Go",
+                    tint = Color(0xFF8E8E9A)
+                )
+            }
+        }
+    }
 }
